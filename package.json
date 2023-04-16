@@ -10,12 +10,10 @@
     "goto-github": "open https://github.com/meg768/homebridge-homey-mqtt.git",
     "goto-npm": "open https://www.npmjs.com/package/homebridge-homey-mqtt"
   },
-
   "engines": {
     "node": ">=12.0.0",
     "homebridge": ">=0.4.33"
   },
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/meg768/homebridge-homey-mqtt.git"
@@ -33,6 +31,9 @@
   "homepage": "https://github.com/meg768/homebridge-homey-mqtt#readme",
   "dependencies": {
     "dotenv": "^16.0.0",
+    "mqtt": "^4.3.7",
+    "mqtt-async": "^1.0.34",
+    "mqtt-dispatch": "^1.0.16",
     "yow": "^1.0.110"
   }
 }

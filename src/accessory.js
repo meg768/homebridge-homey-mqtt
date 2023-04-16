@@ -23,7 +23,6 @@ module.exports = class extends Events  {
 		this.uuid = uuid;
 		
 		this.platform = platform;
-		this.socket = platform.socket;
 		this.device = device;
 		this.log = platform.log;
 		this.debug = platform.debug;
@@ -70,6 +69,12 @@ module.exports = class extends Events  {
         
     }	
     
+    async publish(capabilityID, value) {
+        this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
+        await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
+
+    }
+
     updateCharacteristicValue(service, characteristic, value) {
         this.getService(service).getCharacteristic(characteristic).updateValue(value);
     }
@@ -143,17 +148,16 @@ module.exports = class extends Events  {
 		}
 
 		if (capability.setable) {
-			characteristic.on('set', (value, callback) => {
+			characteristic.on('set', async (value, callback) => {
                 this.debug(`Setting device ${this.name}/${capabilityID} to ${value} (${deviceCapabilityID}).`);
-				this.socket.emit(deviceCapabilityID, value, () => {
-					onoff = value;
-					callback();	
-				});
+				await this.publish(capabilityID, value);
+				onoff = value;
+				callback();	
 			});	
 		}
 
 
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 			onoff = value;
 			this.debug(`Updating ${this.name}/${capabilityID} to ${value} (${deviceCapabilityID}).`);
 			characteristic.updateValue(onoff);
@@ -179,18 +183,8 @@ module.exports = class extends Events  {
 			});	
 		}
 
-        /*
-		if (capability.setable) {
-			characteristic.on('set', (value, callback) => {
-				this.socket.emit(deviceCapabilityID, value, () => {
-					deviceCapabilityID = value;
-					callback();
-				});
-			});	
-		}
-        */
 		
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 			this.debug(`Updating ${this.name} light level to ${value}.`);
 			characteristic.updateValue(currentAmbientLightLevel = value);		
 		});	
@@ -221,20 +215,20 @@ module.exports = class extends Events  {
 		}
 
 		if (capability.setable) {
-			characteristic.on('set', (value, callback) => {
+			characteristic.on('set', async (value, callback) => {
 
 				let convertedValue = value;
 				convertedValue = (convertedValue - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
 				convertedValue = convertedValue * (capability.max - capability.min) + capability.min;
 	
-				this.socket.emit(deviceCapabilityID, convertedValue, () => {
-					brightness = value;
-					callback();
-				});
+				await this.publish(capabilityID, convertedValue);
+
+                brightness = value;
+				callback();
 			});	
 		}
 		
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 
 			// Hmm. Values min/max special case due to on/off
 			if (value == capability.min || value == capability.max)
@@ -281,19 +275,19 @@ module.exports = class extends Events  {
 		}
 
 		if (capability.setable) {
-			characteristic.on('set', (value, callback) => {
+			characteristic.on('set', async (value, callback) => {
 
 				value = (value - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
 				value = value * (capability.max - capability.min) + capability.min;
 	
-				this.socket.emit(deviceCapabilityID, value, () => {
-					colorTemperature = value;
-					callback();
-				});
+				this.publish(capabilityID, value);
+                
+                colorTemperature = value;
+                callback();
 			});	
 		}
 		
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 
 			colorTemperature = value;
 
@@ -327,7 +321,7 @@ module.exports = class extends Events  {
             });
 		}
 
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 			currentTemperature = value;
 
 			this.debug(`Updating ${this.name} temperature to ${currentTemperature}.`);
@@ -358,16 +352,15 @@ module.exports = class extends Events  {
 		}
 
 		if (capability.setable) {
-			characteristic.on('set', (value, callback) => {
-				this.socket.emit(deviceCapabilityID, value, () => {
-					motionDetected = value;
-					callback();
-				});
+			characteristic.on('set', async (value, callback) => {
+				await this.publish(capabilityID, value);
+                motionDetected = value;
+                callback();
 			});	
 		}
 
 
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 			motionDetected = value;
 			this.debug(`Updating ${this.name} motion to ${motionDetected}.`);
 			characteristic.updateValue(motionDetected);	
@@ -397,7 +390,7 @@ module.exports = class extends Events  {
 //		characteristic.updateValue(capabilityValue ? 1 : 0);		
 
 
-		this.socket.on(deviceCapabilityID, (value) => {
+		this.on(capabilityID, (value) => {
 			capabilityValue = value
 			this.debug(`Updating ${this.name} ProgrammableSwitchEvent to ${capabilityValue}.`);
 //			characteristic.updateValue(capabilityValue ? 1 : 0);		

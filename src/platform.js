@@ -5,7 +5,9 @@ module.exports = class Platform {
 
     constructor(log, config, homebridge) {
 
-		const io = require("socket.io-client");
+		const Mqtt = require("mqtt");
+		const MqttAsync = require("mqtt-async");
+        const MqttDispatch = require('mqtt-dispatch');
 	
         this.config = config;
         this.log = log;
@@ -13,8 +15,13 @@ module.exports = class Platform {
         this.debug = config.debug ? log : () => {};
         this.debug = console.debug;
 
-		this.debug(`Connecting to socket ${this.config.socket}...`);
-		this.socket = io(this.config.socket);
+		this.debug(`Connecting to MQTT broker ${this.config.mqtt.host}...`);
+
+		this.mqtt = MqttAsync(Mqtt.connect(this.config.mqtt.host, {
+			username: this.config.mqtt.username,
+			password: this.config.mqtt.password,
+			port: this.config.mqtt.port
+		}));        
     
 		this.homebridge.on('didFinishLaunching', () => {
             this.debug('Finished launching.');
@@ -73,12 +80,10 @@ module.exports = class Platform {
 			
 			if (Accessory != undefined) {
 				this.debug(`Adding device ${device.zoneName}/${device.name}.`);
-				accessories.push(new Accessory({device:device, platform:this}));
+                accessories.push(new Accessory({device:device, platform:this}));
 			}
 	
 		}
-
-		// this.debug(JSON.stringify(devices, null, '  '));
 
 		return accessories;
 
@@ -87,22 +92,44 @@ module.exports = class Platform {
 
     accessories(callback) {
 		
-		this.socket.on('connect', () => {
-		});
 
-		this.socket.on('connected', (payload) => {
+        let accessories = undefined;
 
-			if (this.devices == undefined) {
-				let {devices, zones} = payload;
-				this.debug(`Connected to socket. Found ${Object.entries(devices).length} devices.`);
-	
-                this.debug(JSON.stringify(devices, null, '  '));
-				this.devices = devices;
-				this.zones = zones;
-	
-				callback(this.createAccessories(devices));	
-			}
-		});
+		this.mqtt.on('connect', () => {
+     
+            this.debug(`Subscribing to ${this.config.mqtt.topic}/devices...`);
+
+            this.mqtt.subscribe(`${this.config.mqtt.topic}/devices`);
+            this.mqtt.subscribe(`${this.config.mqtt.topic}/devices/+/+`);
+    
+            this.mqtt.on('message', (topic, message) => {
+                let value = JSON.parse(message.toString());
+    
+                if (topic == `${this.config.mqtt.topic}/devices`) {
+                    accessories = this.createAccessories(value);
+                    callback(accessories);	
+    
+                }
+                else {
+                    let parts = topic.split('/');
+                    let capabilityID = parts.pop();
+                    let deviceID = parts.pop();
+
+                    let accessory = accessories.find(item => {
+                        return item.device.id == deviceID;
+                    });
+
+                    if (accessory != undefined)
+                        accessory.emit(capabilityID, value);
+                }
+            });
+          
+
+
+        });
+
+
+
 
     }
 
