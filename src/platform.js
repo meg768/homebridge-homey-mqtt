@@ -6,8 +6,7 @@ module.exports = class Platform {
     constructor(log, config, homebridge) {
 
 		const Mqtt = require("mqtt");
-		const MqttAsync = require("mqtt-async");
-        const MqttDispatch = require('mqtt-dispatch');
+		const MqttAsync = require("./mqtt-async.js");
 	
         this.config = config;
         this.log = log;
@@ -17,19 +16,74 @@ module.exports = class Platform {
 
 		this.debug(`Connecting to MQTT broker ${this.config.mqtt.host}...`);
 
-		this.mqtt = MqttAsync(Mqtt.connect(this.config.mqtt.host, {
-			username: this.config.mqtt.username,
-			password: this.config.mqtt.password,
-			port: this.config.mqtt.port
-		}));        
+        if (false) {
+            this.mqtt = MqttAsync(Mqtt.connect(this.config.mqtt.host, {
+                username: this.config.mqtt.username,
+                password: this.config.mqtt.password,
+                port: this.config.mqtt.port
+            }));
     
-		this.homebridge.on('didFinishLaunching', () => {
+        }
+        else {
+
+            this.mqtt = MqttAsync.connect(this.config.mqtt.host, {
+                username: this.config.mqtt.username,
+                password: this.config.mqtt.password,
+                port: this.config.mqtt.port
+            });
+    
+        }
+
+        this.homebridge.on('didFinishLaunching', () => {
             this.debug('Finished launching.');
 		});
 
     }
 
 
+
+	createAccessory(device) {
+
+        let Socket =  require('./accessories/socket.js');
+        let Light = require('./accessories/light.js');
+        let TV = require('./accessories/tv.js');
+        let Sensor = require('./accessories/sensor.js');
+        let Switch = require('./accessories/switch.js');
+        
+        let Accessory = undefined;
+
+        switch (device.class) {
+            case 'tv': {
+                Accessory = TV; 
+                break;
+            }
+            case 'socket': {
+                Accessory = Socket;
+                break;
+            }
+            case 'sensor': {
+                Accessory = Sensor;
+                break;
+            }
+            case 'light': {
+                Accessory = Light;
+                break;
+            }
+            default: {
+                if (device.capabilitiesObj && device.capabilitiesObj.onoff) {
+                    Accessory = Switch;
+                }
+                break;
+            }
+        }
+
+        
+        if (Accessory != undefined) {
+            return new Accessory({device:device, platform:this});
+        }
+	
+
+	}
 
 	createAccessories(devices) {
 
