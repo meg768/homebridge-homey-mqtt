@@ -6,7 +6,7 @@ module.exports = class Platform {
     constructor(log, config, homebridge) {
 
 		const Mqtt = require("mqtt");
-		const MqttAsync = require("./mqtt-async.js");
+		const MqttAsync = require("mqtt-async");
 	
         this.config = config;
         this.log = log;
@@ -16,23 +16,12 @@ module.exports = class Platform {
 
 		this.debug(`Connecting to MQTT broker ${this.config.mqtt.host}...`);
 
-        if (false) {
-            this.mqtt = MqttAsync(Mqtt.connect(this.config.mqtt.host, {
-                username: this.config.mqtt.username,
-                password: this.config.mqtt.password,
-                port: this.config.mqtt.port
-            }));
+        this.mqtt = MqttAsync(Mqtt.connect(this.config.mqtt.host, {
+            username: this.config.mqtt.username,
+            password: this.config.mqtt.password,
+            port: this.config.mqtt.port
+        }));
     
-        }
-        else {
-
-            this.mqtt = MqttAsync.connect(this.config.mqtt.host, {
-                username: this.config.mqtt.username,
-                password: this.config.mqtt.password,
-                port: this.config.mqtt.port
-            });
-    
-        }
 
         this.homebridge.on('didFinishLaunching', () => {
             this.debug('Finished launching.');
