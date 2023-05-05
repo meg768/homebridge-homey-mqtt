@@ -185,7 +185,8 @@ module.exports = class extends Events  {
 
 		
 		this.on(capabilityID, (value) => {
-			this.debug(`Updating ${this.name} light level to ${value}.`);
+            this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+
 			characteristic.updateValue(currentAmbientLightLevel = value);		
 		});	
 	}
@@ -239,7 +240,8 @@ module.exports = class extends Events  {
 
 			brightness = value;
 
-			this.debug(`Updating ${this.name} brightness to ${brightness}.`);
+            this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+
 			characteristic.updateValue(brightness);		
 
 		});	
@@ -294,7 +296,8 @@ module.exports = class extends Events  {
 			value = (value - capability.min) / (capability.max - capability.min);
 			value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
 
-			this.debug(`Updating ${this.name} color temperature to ${value}.`);
+            this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+
 			characteristic.updateValue(value);		
 
 		});	
@@ -324,7 +327,7 @@ module.exports = class extends Events  {
 		this.on(capabilityID, (value) => {
 			currentTemperature = value;
 
-			this.debug(`Updating ${this.name} temperature to ${currentTemperature}.`);
+            this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 			characteristic.updateValue(currentTemperature);
 		});			
 
