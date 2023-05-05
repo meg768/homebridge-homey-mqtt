@@ -362,7 +362,7 @@ module.exports = class extends Events  {
 
 		this.on(capabilityID, (value) => {
 			motionDetected = value;
-			this.debug(`Updating ${this.name} motion to ${motionDetected}.`);
+			this.debug(`Updating "${this.name}" ${capabilityID} to ${motionDetected}. (${this.device.id})`);
 			characteristic.updateValue(motionDetected);	
 		});
 	}
