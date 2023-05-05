@@ -159,7 +159,7 @@ module.exports = class extends Events  {
 
 		this.on(capabilityID, (value) => {
 			onoff = value;
-			this.debug(`Updating ${this.name}/${capabilityID} to ${value} (${deviceCapabilityID}).`);
+			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 			characteristic.updateValue(onoff);
 		});
 	}
@@ -362,7 +362,7 @@ module.exports = class extends Events  {
 
 		this.on(capabilityID, (value) => {
 			motionDetected = value;
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${motionDetected}. (${this.device.id})`);
+			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 			characteristic.updateValue(motionDetected);	
 		});
 	}
