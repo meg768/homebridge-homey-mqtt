@@ -161,7 +161,9 @@ module.exports = class extends Events  {
 			onoff = value;
 //			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 //			this.debug(`Updating "${this.name}" - ${deviceCapabilityID}:${value}`);
-			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name})`);
+//			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name})`);
+            this.debug(`Updating "${this.name}" - ${deviceCapabilityID}:${value}`);
+
 			characteristic.updateValue(onoff);
 		});
 	}
@@ -369,7 +371,7 @@ module.exports = class extends Events  {
 			motionDetected = value;
 //			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 //			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name}).`);
-            this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name})`);
+            this.debug(`Updating "${this.name}" - ${deviceCapabilityID}:${value}`);
 
 			characteristic.updateValue(motionDetected);	
 		});
