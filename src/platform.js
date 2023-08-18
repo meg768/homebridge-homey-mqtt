@@ -118,7 +118,7 @@ module.exports = class Platform {
                     break;
                 }
                 default: {
-                    if (device.capabilitiesObj && device.capabilitiesObj.onoff) {
+                    if (device.capabilitiesObj.onoff) {
                         Accessory = Switch;
                     }
                     break;
