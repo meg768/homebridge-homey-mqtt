@@ -93,6 +93,11 @@ module.exports = class Platform {
 				continue;
 			}
 
+            if (!device.capabilitiesObj) {
+                this.debug(`Ignoring device ${device.zoneName}/${device.name}. No capabilities.`);
+                continue;
+            }
+
 			let Accessory = undefined;
 
             switch (device.class) {

@@ -165,6 +165,10 @@ module.exports = class extends Events  {
 		});
 	}
 
+    updateValue(characteristic, value) {
+        characteristic.updateValue(value);
+    }
+
 	enableLightSensor(service) {
 		let capabilityID = 'measure_luminance';
 		let capability = this.device.capabilitiesObj[capabilityID];
