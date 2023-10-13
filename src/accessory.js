@@ -339,6 +339,38 @@ module.exports = class extends Events  {
 
 
 
+
+	enableCurrentRelativeHumidity(service) {
+		let capabilityID = 'measure_humidity';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined)
+			return;
+		
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentRelativeHumidity);
+		let currentRelativeHumidity = capability.value;
+
+		characteristic.updateValue(currentRelativeHumidity);		
+
+		if (characteristic.getable) {
+			characteristic.on('get', (callback) => {
+				callback(null, currentRelativeHumidity);
+            });
+		}
+
+		this.on(capabilityID, (value) => {
+			currentRelativeHumidity = value;
+
+            this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+			characteristic.updateValue(currentRelativeHumidity);
+		});			
+
+	}
+
+
+
+
+
 	enableMotionDetected(service) {
 		let capabilityID = 'alarm_motion';
 		let capability = this.device.capabilitiesObj[capabilityID];
