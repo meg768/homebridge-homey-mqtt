@@ -72,8 +72,6 @@ module.exports = class extends Events  {
     async publish(capabilityID, value) {
         this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
         await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
-        await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/capability/${capabilityID}`, JSON.stringify(value));
-
     }
 
     updateCharacteristicValue(service, characteristic, value) {
