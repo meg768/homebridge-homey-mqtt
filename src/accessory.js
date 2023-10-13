@@ -348,7 +348,7 @@ module.exports = class extends Events  {
 			return;
 		
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentRelativeHumidity);
-		let currentRelativeHumidity = capability.value;
+		let currentRelativeHumidity = 50; // capability.value;
 
 		characteristic.updateValue(currentRelativeHumidity);		
 
@@ -359,7 +359,10 @@ module.exports = class extends Events  {
 		}
 
 		this.on(capabilityID, (value) => {
+            value = 50;
+            
 			currentRelativeHumidity = value;
+            currentRelativeHumidity = 50;
 
             this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
 			characteristic.updateValue(currentRelativeHumidity);
