@@ -61,12 +61,14 @@ module.exports = class Platform {
                 if (device.capabilitiesObj && device.capabilitiesObj.onoff) {
                     Accessory = Switch;
                 }
+                /*
                 if (device.capabilitiesObj && device.capabilitiesObj.measure_temperature) {
                     Accessory = Sensor;
                 }
                 if (device.capabilitiesObj && device.capabilitiesObj.measure_humidity) {
                     Accessory = Sensor;
                 }
+                */
                 
                 break;
             }
