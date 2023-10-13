@@ -25,7 +25,7 @@ module.exports = class extends Accessory {
 		}
 		if (this.device.capabilitiesObj['measure_humidity']) {
 			this.addService(new Service.HumiditySensor(this.name, this.UUID));
-			this.enableLightSensor(Service.HumiditySensor);		
+			this.enableCurrentRelativeHumidity(Service.HumiditySensor);		
 		}
 
     }
