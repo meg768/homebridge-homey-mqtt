@@ -185,12 +185,14 @@ module.exports = class extends Events  {
 
 		if (capability.getable) {
 			characteristic.on('get', (callback) => {
+                this.debug(`GETTING LOCK VALUE!`);
 				callback(null, locked ? SECURED : UNSECURED);
 			});
 		}
 
 		if (capability.setable) {
 			characteristic.on('set', async (value, callback) => {
+                this.debug(`SETTINGS LOCK VALUE!`);
                 let convertedValue = value == SECURED;
 
                 this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
@@ -203,6 +205,7 @@ module.exports = class extends Events  {
 
 
 		this.on(capabilityID, (value) => {
+            this.debug(`UPDATING LOCK VALUE!`);
 			locked = value;
             this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
 
