@@ -174,7 +174,6 @@ module.exports = class extends Events  {
 		let capabilityID = 'locked';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-        this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!! ${}`);
 
 		if (capability == undefined)
 			return;
