@@ -188,11 +188,16 @@ module.exports = class extends Events  {
 		characteristic.updateValue(locked ? SECURED : UNSECURED);		
 
 		if (capability.getable) {
+            this.debug(`IS GETABLE!`);
 			characteristic.on('get', (callback) => {
                 this.debug(`GETTING LOCK VALUE!`);
 				callback(null, locked ? SECURED : UNSECURED);
 			});
 		}
+        else {
+            this.debug(`NOT GETABLE!`);
+
+        }
 
 		if (capability.setable) {
 			characteristic.on('set', async (value, callback) => {
@@ -206,6 +211,10 @@ module.exports = class extends Events  {
                 callback();	
 			});	
 		}
+        else {
+            this.debug(`NOT SETABLE!`);
+
+        }
 
 
 		this.on(capabilityID, (value) => {
