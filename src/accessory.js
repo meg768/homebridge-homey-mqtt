@@ -160,7 +160,7 @@ module.exports = class extends Events {
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
 		let locked = capability.value ? true : false;
 
-		let getLockState = async () => {
+		let getLockState = () => {
 			return locked ? SECURED : UNSECURED;
 		};
 
