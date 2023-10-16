@@ -160,34 +160,38 @@ module.exports = class extends Events {
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
 		let locked = capability.value ? true : false;
 
-		function getLockState() {
-            return locked ? SECURED : UNSECURED;
-        }
+		let getLockState = async () => {
+			return locked ? SECURED : UNSECURED;
+		};
 
-		async function setLockState(value) {
-            this.debug(`SETTINGS LOCK VALUE!`);
-            let convertedValue = value == SECURED;
+		let setLockState = async (value) => {
+			this.debug(`SETTINGS LOCK VALUE!`);
+			let convertedValue = value == SECURED;
 
-            this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
-            await this.publish(capabilityID, convertedValue);
-
-        }
+			this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
+			await this.publish(capabilityID, convertedValue);
+		};
 
 		this.enableCharacteristic(Service.LockMechanism, Characteristic.LockCurrentState, getLockState);
 		this.enableCharacteristic(Service.LockMechanism, Characteristic.LockTargetState, getLockState, setLockState);
 
 		this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!!`);
 
-		this.getService(service).getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
-
+		this.getService(service)
+			.getCharacteristic(Characteristic.LockCurrentState)
+			.updateValue(locked ? SECURED : UNSECURED);
 
 		this.on(capabilityID, (value) => {
 			this.debug(`UPDATING LOCK VALUE!`);
 			locked = value;
 			this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
 
-			this.getService(service).getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
-			this.getService(service).getCharacteristic(Characteristic.LockTargetState).updateValue(locked ? SECURED : UNSECURED);
+			this.getService(service)
+				.getCharacteristic(Characteristic.LockCurrentState)
+				.updateValue(locked ? SECURED : UNSECURED);
+			this.getService(service)
+				.getCharacteristic(Characteristic.LockTargetState)
+				.updateValue(locked ? SECURED : UNSECURED);
 		});
 	}
 
