@@ -171,8 +171,10 @@ module.exports = class extends Events  {
         var JAMMED    = Characteristic.LockCurrentState.JAMMED;
         var UNKNOWN   = Characteristic.LockCurrentState.UNKNOWN;
 
-		let capabilityID = 'lock';
+		let capabilityID = 'locked';
 		let capability = this.device.capabilitiesObj[capabilityID];
+
+        this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!! ${}`);
 
 		if (capability == undefined)
 			return;
