@@ -168,7 +168,6 @@ module.exports = class extends Events {
 		};
 
 		let setLockState = async (value) => {
-			this.debug(`SETTINGS LOCK VALUE!`);
 			let convertedValue = value == SECURED;
 
 			this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
@@ -178,19 +177,13 @@ module.exports = class extends Events {
 		this.enableCharacteristic(service, Characteristic.LockCurrentState, getLockState);
 		this.enableCharacteristic(service, Characteristic.LockTargetState, getLockState, setLockState);
 
-		this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!!`);
-
         this.updateCharacteristicValue(service, Characteristic.LockCurrentState, locked ? SECURED : UNSECURED);
 
 		this.on(capabilityID, (value) => {
-			this.debug(`UPDATING LOCK VALUE!`);
 			locked = value;
 			this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
 
-			//service.getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
-			//service.getCharacteristic(Characteristic.LockTargetState).updateValue(locked ? SECURED : UNSECURED);
-
-			this.updateCharacteristicValue(service, Characteristic.LockCurrentState, locked ? SECURED : UNSECURED);
+            this.updateCharacteristicValue(service, Characteristic.LockCurrentState, locked ? SECURED : UNSECURED);
 			this.updateCharacteristicValue(service, Characteristic.LockTargetState, locked ? SECURED : UNSECURED);
 		});
 	}
