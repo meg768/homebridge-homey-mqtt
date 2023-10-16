@@ -179,7 +179,7 @@ module.exports = class extends Events  {
 
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.LockCurrentState);
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let locked = capability.value;
+		let locked = capability.value ? true : false;
 
 		characteristic.updateValue(locked ? SECURED : UNSECURED);		
 
@@ -191,11 +191,12 @@ module.exports = class extends Events  {
 
 		if (capability.setable) {
 			characteristic.on('set', async (value, callback) => {
-                locked = (value == SECURED);
+                let convertedValue = value == SECURED;
 
-                this.debug(`Setting device ${this.name}/${capabilityID} to ${locked} (${deviceCapabilityID}).`);
-				await this.publish(capabilityID, locked);
+                this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
+				await this.publish(capabilityID, convertedValue);
 
+                locked = convertedValue;
                 callback();	
 			});	
 		}
