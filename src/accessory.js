@@ -186,12 +186,8 @@ module.exports = class extends Events {
 			locked = value;
 			this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
 
-			this.getService(service)
-				.getCharacteristic(Characteristic.LockCurrentState)
-				.updateValue(locked ? SECURED : UNSECURED);
-			this.getService(service)
-				.getCharacteristic(Characteristic.LockTargetState)
-				.updateValue(locked ? SECURED : UNSECURED);
+			this.getService(service).getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
+			this.getService(service).getCharacteristic(Characteristic.LockTargetState).updateValue(locked ? SECURED : UNSECURED);
 		});
 	}
 
