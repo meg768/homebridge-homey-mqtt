@@ -181,6 +181,9 @@ module.exports = class extends Events  {
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
 		let locked = capability.value ? true : false;
 
+
+        this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!!`);
+
 		characteristic.updateValue(locked ? SECURED : UNSECURED);		
 
 		if (capability.getable) {
