@@ -164,6 +164,52 @@ module.exports = class extends Events  {
 		});
 	}
 
+	enableLock(service) {
+
+        var UNSECURED = Characteristic.LockCurrentState.UNSECURED;
+        var SECURED   = Characteristic.LockCurrentState.SECURED;
+        var JAMMED    = Characteristic.LockCurrentState.JAMMED;
+        var UNKNOWN   = Characteristic.LockCurrentState.UNKNOWN;
+
+		let capabilityID = 'lock';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined)
+			return;
+
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.LockCurrentState);
+		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
+		let locked = capability.value;
+
+		characteristic.updateValue(locked ? SECURED : UNSECURED);		
+
+		if (capability.getable) {
+			characteristic.on('get', (callback) => {
+				callback(null, locked ? SECURED : UNSECURED);
+			});
+		}
+
+		if (capability.setable) {
+			characteristic.on('set', async (value, callback) => {
+                locked = (value == SECURED);
+
+                this.debug(`Setting device ${this.name}/${capabilityID} to ${locked} (${deviceCapabilityID}).`);
+				await this.publish(capabilityID, locked);
+
+                callback();	
+			});	
+		}
+
+
+		this.on(capabilityID, (value) => {
+			locked = value;
+            this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
+
+			characteristic.updateValue(locked ? SECURED : UNSECURED);
+		});
+	}
+
+
     updateValue(characteristic, value) {
         characteristic.updateValue(value);
     }

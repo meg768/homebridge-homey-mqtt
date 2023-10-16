@@ -89,6 +89,7 @@ module.exports = class Platform {
         let TV = require('./accessories/tv.js');
         let Sensor = require('./accessories/sensor.js');
         let Switch = require('./accessories/switch.js');
+        let Lock = require('./accessories/lock.js');
         
         let accessories = [];
 
@@ -124,6 +125,10 @@ module.exports = class Platform {
                 }
                 case 'light': {
                     Accessory = Light;
+                    break;
+                }
+                case 'lock': {
+                    Accessory = Lock;
                     break;
                 }
                 default: {
