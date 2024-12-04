@@ -17,7 +17,7 @@ module.exports = class extends Accessory {
 			this.enableMotionDetected(Service.MotionSensor);	
 		}
 		if (this.device.capabilitiesObj['measure_temperature']) {
-			this.addService(new Service.TemperatureSensor(this.name, this.UUID));
+			this.addService(new Service.TemperatureSensor(`${this.name} (temperatur)`, this.UUID));
 			this.enableCurrentTemperature(Service.TemperatureSensor);		
 		}
 		if (this.device.capabilitiesObj['measure_luminance']) {
