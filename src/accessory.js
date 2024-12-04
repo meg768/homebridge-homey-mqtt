@@ -146,8 +146,6 @@ module.exports = class extends Events {
 	}
 
 	enableLock(service) {
-		service = this.getService(service);
-
 		var UNSECURED = Characteristic.LockCurrentState.UNSECURED;
 		var SECURED = Characteristic.LockCurrentState.SECURED;
 		var JAMMED = Characteristic.LockCurrentState.JAMMED;
@@ -156,51 +154,45 @@ module.exports = class extends Events {
 		let capabilityID = 'locked';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) {
-			return;
-		}
+		if (capability == undefined) return;
 
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.LockCurrentState);
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
 		let locked = capability.value ? true : false;
 
-		let getLockState = () => {
-			return locked ? SECURED : UNSECURED;
-		};
+		function getLockState() {
+            return locked ? SECURED : UNSECURED;
+        }
 
-		let setLockState = async (value) => {
-			this.debug(`SETTINGS LOCK VALUE!`);
-			let convertedValue = value == SECURED;
+		async function setLockState(value) {
+            this.debug(`SETTINGS LOCK VALUE!`);
+            let convertedValue = value == SECURED;
 
-			this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
-			await this.publish(capabilityID, convertedValue);
-		};
+            this.debug(`Setting device ${this.name}/${capabilityID} to ${convertedValue} (${deviceCapabilityID}).`);
+            await this.publish(capabilityID, convertedValue);
 
-		this.enableCharacteristic(service, Characteristic.LockCurrentState, getLockState);
-		this.enableCharacteristic(service, Characteristic.LockTargetState, getLockState, setLockState);
+        }
+
+		this.enableCharacteristic(Service.LockMechanism, Characteristic.LockCurrentState, getLockState);
+		this.enableCharacteristic(Service.LockMechanism, Characteristic.LockTargetState, getLockState, setLockState);
 
 		this.debug(`ENABELING LOCK!!!!!!!!!!!!!!!!!!`);
 
-        this.updateCharacteristicValue(service, Characteristic.LockCurrentState, locked ? SECURED : UNSECURED);
+		this.getService(service).getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
+
 
 		this.on(capabilityID, (value) => {
 			this.debug(`UPDATING LOCK VALUE!`);
 			locked = value;
 			this.debug(`Updating ${deviceCapabilityID}:${locked} (${this.name})`);
 
-			//service.getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
-			//service.getCharacteristic(Characteristic.LockTargetState).updateValue(locked ? SECURED : UNSECURED);
-
-			this.updateCharacteristicValue(service, Characteristic.LockCurrentState, locked ? SECURED : UNSECURED);
-			this.updateCharacteristicValue(service, Characteristic.LockTargetState, locked ? SECURED : UNSECURED);
+			this.getService(service).getCharacteristic(Characteristic.LockCurrentState).updateValue(locked ? SECURED : UNSECURED);
+			this.getService(service).getCharacteristic(Characteristic.LockTargetState).updateValue(locked ? SECURED : UNSECURED);
 		});
 	}
 
 	updateValue(characteristic, value) {
 		characteristic.updateValue(value);
-	}
-
-	updateCharacteristicValue(service, characteristic, value) {
-		service.getCharacteristic(characteristic).updateValue(value);
 	}
 
 	enableLightSensor(service) {
