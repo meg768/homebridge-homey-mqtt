@@ -4,7 +4,6 @@
   "description": "homebridge-homey-mqtt",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "git-commit": "git add -A && git push && git commit -m '-' && git push",
     "npm-publish": "npm version patch && npm publish",
     "goto-github": "open https://github.com/meg768/homebridge-homey-mqtt.git",
