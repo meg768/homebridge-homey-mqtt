@@ -108,6 +108,7 @@ module.exports = class Platform {
                 continue;
             }
 
+            this.debug(JSON.stringify(device));
 			let Accessory = undefined;
 
             switch (device.class) {
@@ -136,10 +137,11 @@ module.exports = class Platform {
                         Accessory = Switch;
                     }
 
+/*
                     else if (device.capabilitiesObj.measure_temperature) {
                         Accessory = Sensor;
                     }
-
+*/
                     break;
                 }
             }
