@@ -11,8 +11,9 @@ module.exports = class extends Accessory {
 
 		super(options);
 		
+
 		if (this.device.capabilitiesObj['alarm_motion']) {
-			this.addService(new Service.MotionSensor(this.name, this.UUID));
+			this.addService(new Service.MotionSensor(`${this.name} (rörelse)`, this.UUID));
 			this.enableMotionDetected(Service.MotionSensor);	
 		}
 		if (this.device.capabilitiesObj['measure_temperature']) {
