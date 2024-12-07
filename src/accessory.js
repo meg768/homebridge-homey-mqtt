@@ -123,6 +123,10 @@ module.exports = class extends Events {
 		await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
 	}
 
+	getServiceCharacteristic(service, characteristic) {
+		return this.getService(service).getCharacteristic(characteristic);
+	}
+
 	updateCharacteristicValue(service, characteristic, value) {
 		this.getService(service).getCharacteristic(characteristic).updateValue(value);
 	}
@@ -176,9 +180,50 @@ module.exports = class extends Events {
 
 		if (capability == undefined) return;
 
+		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
+		let currentValue = valueToHomeKit(capability.value);
+
+		characteristic.updateValue(currentValue);
+
+		let valueToHomeKit = (value) => {
+			return value;
+		}
+		
+		let valueToHomey = (value) => {
+			return value;
+		}
+
+		let getValue = async () => {
+			return currentValue;
+		}
+
+		let setValue = async (value) => {
+			currentValue = value;
+			await this.publish(capabilityID, valueToHomey(currentValue));
+		}
+
+		this.enableCharacteristic(service, Characteristic.On, getValue, setValue);
+
+		this.on(capabilityID, (value) => {
+			currentValue = valueToHomeKit(value);
+			this.debug(`Updating ${this.name}/capabilityID:${currentValue} (${this.device.id})`);
+			characteristic.updateValue(currentValue);
+		});
+	}
+
+
+	enableOnOffX(service) {
+		let capabilityID = 'onoff';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined) return;
+
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.On);
 		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
 		let onoff = capability.value ? true : false;
+
+//		this.enableCharacteristic(service, Characteristic.On, getLockState, setLockState);
+
 
 		characteristic.updateValue(onoff);
 
