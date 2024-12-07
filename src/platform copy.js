@@ -32,7 +32,12 @@ module.exports = class Platform {
 
 	createAccessories(devices) {
 
-        let Accessory = require('./accessory.js');
+        let Socket = require('./accessories/socket.js');
+        let Light = require('./accessories/light.js');
+        let TV = require('./accessories/tv.js');
+        let Sensor = require('./accessories/sensor.js');
+        let Switch = require('./accessories/switch.js');
+        let Lock = require('./accessories/lock.js');
         
         let accessories = [];
 
@@ -51,13 +56,45 @@ module.exports = class Platform {
                 continue;
             }
 
-            try {
+			let Accessory = undefined;
+
+            switch (device.class) {
+                case 'tv': {
+                    Accessory = TV; 
+                    break;
+                }
+                case 'socket': {
+                    Accessory = Socket;
+                    break;
+                }
+                case 'sensor': {
+                    Accessory = Sensor;
+                    break;
+                }
+                case 'light': {
+                    Accessory = Light;
+                    break;
+                }
+                case 'lock': {
+                    Accessory = Lock;
+                    break;
+                }
+                default: {
+                    if (device.capabilitiesObj.onoff) {
+                        Accessory = Switch;
+                    }
+
+                    else if (device.capabilitiesObj.measure_temperature) {
+                        Accessory = Sensor;
+                    }
+                    break;
+                }
+            }
+			
+			if (Accessory != undefined) {
 				this.debug(`Adding device ${device.name}.`);
                 accessories.push(new Accessory({device:device, platform:this}));
-            }
-            catch(error) {
-				this.debug(`Could not att device ${device.name}. ${error.message}`);
-            }
+			}
 	
 		}
 
