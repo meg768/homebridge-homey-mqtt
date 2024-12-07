@@ -131,6 +131,40 @@ module.exports = class extends Events {
 		this.getService(service).getCharacteristic(characteristic).updateValue(value);
 	}
 
+	enableCharacteristicGet(service, characteristic, getter) {
+		service = this.getService(service);
+
+		if (typeof getter === 'function') {
+			service.getCharacteristic(characteristic).on('get', async (callback) => {
+				try {
+					var value = await getter();
+					callback(null, value);
+				} catch (error) {
+					this.log(error);
+					callback();
+				}
+			});
+		}
+	}
+
+	enableCharacteristicSet(service, characteristic, setter) {
+		service = this.getService(service);
+
+
+		if (typeof setter === 'function') {
+			service.getCharacteristic(characteristic).on('set', async (value, callback) => {
+				try {
+					await setter(value);
+				} catch (error) {
+					this.log(error);
+				} finally {
+					callback();
+				}
+			});
+		}
+	}
+
+
 	enableCharacteristic(service, characteristic, getter, setter) {
 		service = this.getService(service);
 
@@ -195,16 +229,15 @@ module.exports = class extends Events {
 		characteristic.updateValue(currentValue);
 
 
-		let getValue = async () => {
-			return currentValue;
-		}
 
-		let setValue = async (value) => {
+		this.enableCharacteristicGet(service, Characteristic.On, async () => {
+			return currentValue;
+		});
+
+		this.enableCharacteristicSet(service, Characteristic.On, async (value) => {
 			currentValue = value;
 			await this.publish(capabilityID, valueToHomey(currentValue));
-		}
-
-		this.enableCharacteristic(service, Characteristic.On, getValue, setValue);
+		});
 
 		this.on(capabilityID, (value) => {
 			currentValue = valueToHomeKit(value);
