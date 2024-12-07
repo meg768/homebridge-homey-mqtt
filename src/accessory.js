@@ -175,6 +175,15 @@ module.exports = class extends Events {
 	}
 
 	enableOnOff(service) {
+
+		let valueToHomeKit = (value) => {
+			return value;
+		}
+		
+		let valueToHomey = (value) => {
+			return value;
+		}
+
 		let capabilityID = 'onoff';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
@@ -185,13 +194,6 @@ module.exports = class extends Events {
 
 		characteristic.updateValue(currentValue);
 
-		let valueToHomeKit = (value) => {
-			return value;
-		}
-		
-		let valueToHomey = (value) => {
-			return value;
-		}
 
 		let getValue = async () => {
 			return currentValue;
