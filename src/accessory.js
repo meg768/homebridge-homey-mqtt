@@ -208,7 +208,20 @@ module.exports = class extends Events {
 		}.call(args);
 	}
 
+	updateCharacteristicValueFromCapabilityID(characteristic, value, capabilityID) {
+		this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+		characteristic.updateValue(value);
+	}
+
 	enableOnOff(service) {
+
+		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
+		let capabilityID = 'onoff';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined) {
+			return;
+		}
 
 		let valueToHomeKit = (value) => {
 			return value;
@@ -218,12 +231,6 @@ module.exports = class extends Events {
 			return value;
 		}
 
-		let capabilityID = 'onoff';
-		let capability = this.device.capabilitiesObj[capabilityID];
-
-		if (capability == undefined) return;
-
-		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
 		let currentValue = valueToHomeKit(capability.value);
 
 		characteristic.updateValue(currentValue);
@@ -239,8 +246,10 @@ module.exports = class extends Events {
 
 		this.on(capabilityID, (value) => {
 			currentValue = valueToHomeKit(value);
-			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue} (${this.device.id})`);
-			characteristic.updateValue(currentValue);
+			this.updateCharacteristicValueFromCapabilityID(characteristic, currentValue, capabilityID);
+			//this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
+			//characteristic.updateValue(currentValue);
+			//this.updateCharacteristicValueFromCapabilityID(characteristic, currentValue, capabilityID);
 		});
 	}
 
