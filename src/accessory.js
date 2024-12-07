@@ -433,15 +433,21 @@ module.exports = class extends Events {
 
 
 	enableStatusLowBattery(service) {
+
+		let isLowBattery = (value) => {
+			let BATTERY_LEVEL_NORMAL = Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
+			let BATTERY_LEVEL_LOW = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
+	
+			return value <= 20 ? BATTERY_LEVEL_LOW : BATTERY_LEVEL_NORMAL;
+		}
+
 		let capabilityID = 'measure_battery';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
 		if (capability == undefined) return;
 
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.StatusLowBattery);
-		let BATTERY_LEVEL_NORMAL = characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
-		let BATTERY_LEVEL_LOW = characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
-		let currentValue = capability.value <= 20 ? BATTERY_LEVEL_LOW : BATTERY_LEVEL_NORMAL;
+		let currentValue = isLowBattery(capability.value);
 
 		characteristic.updateValue(currentValue);
 
@@ -452,7 +458,7 @@ module.exports = class extends Events {
 		}
 
 		this.on(capabilityID, (value) => {
-			currentValue = value;
+			currentValue = isLowBattery(value);
 
 			this.debug(`Updating "${this.name}" ${capabilityID} to ${currentValue} (${this.device.id}).`);
 			characteristic.updateValue(currentValue);
@@ -468,7 +474,7 @@ module.exports = class extends Events {
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.BatteryLevel);
 		let currentValue = capability.value;
 
-		characteristic.updateValue(batteryLevel);
+		characteristic.updateValue(currentValue);
 
 		if (characteristic.getable) {
 			characteristic.on('get', (callback) => {
