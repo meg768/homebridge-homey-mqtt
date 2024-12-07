@@ -234,11 +234,16 @@ module.exports = class extends Events {
 			return currentValue;
 		});
 
+		characteristic.onSet(async (value) => {
+			currentValue = value;
+			await this.publish(capabilityID, valueToHomey(currentValue));
+		});
+/*
 		this.enableCharacteristicSet(service, Characteristic.On, async (value) => {
 			currentValue = value;
 			await this.publish(capabilityID, valueToHomey(currentValue));
 		});
-
+*/
 		this.on(capabilityID, (value) => {
 			currentValue = valueToHomeKit(value);
 			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue} (${this.device.id})`);
