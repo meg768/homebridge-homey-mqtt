@@ -208,7 +208,7 @@ module.exports = class extends Events {
 
 		this.on(capabilityID, (value) => {
 			currentValue = valueToHomeKit(value);
-			this.debug(`Updating ${this.name}/capabilityID:${currentValue} (${this.device.id})`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue} (${this.device.id})`);
 			characteristic.updateValue(currentValue);
 		});
 	}
