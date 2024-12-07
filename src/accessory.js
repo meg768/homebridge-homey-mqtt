@@ -78,7 +78,7 @@ module.exports = class extends Events {
 		}
 		if (this.device.capabilitiesObj['measure_battery']) {
 			this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
-			this.enableStatusLowBattery(Service.Battery);		
+			this.enableStatusLowBattery(Service.Battery);
 			this.enableBatteryLevel(Service.Battery);		
 		}
 
