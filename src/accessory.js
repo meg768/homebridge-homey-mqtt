@@ -228,7 +228,7 @@ module.exports = class extends Events {
 
 		characteristic.updateValue(currentValue);
 
-		characteristic.onGet(service, Characteristic.On, async () => {
+		characteristic.onGet(async () => {
 			return currentValue;
 		});
 
