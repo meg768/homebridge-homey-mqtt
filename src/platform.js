@@ -21,7 +21,6 @@ module.exports = class Platform {
             port: this.config.mqtt.port
         }));
     
-
         this.homebridge.on('didFinishLaunching', () => {
             this.debug('Finished launching.');
 		});
@@ -33,7 +32,6 @@ module.exports = class Platform {
 	createAccessories(devices) {
 
         let Accessory = require('./accessory.js');
-        
         let accessories = [];
 
 		this.debug(`Creating accessories...`);
@@ -52,11 +50,11 @@ module.exports = class Platform {
             }
 
             try {
-				this.debug(`Adding device ${device.name}.`);
+				this.debug(`Adding device '${device.name}'.`);
                 accessories.push(new Accessory({device:device, platform:this}));
             }
             catch(error) {
-				this.debug(`Could not att device ${device.name}. ${error.message}`);
+				this.debug(`Could not create device '${device.name}'. ${error.message}`);
             }
 	
 		}
@@ -68,7 +66,6 @@ module.exports = class Platform {
 
     accessories(callback) {
 		
-
         let accessories = undefined;
 
 		this.mqtt.on('connect', () => {
@@ -99,14 +96,7 @@ module.exports = class Platform {
                         accessory.emit(capabilityID, value);
                 }
             });
-          
-
-
         });
-
-
-
-
     }
 
 	generateUUID(id) {

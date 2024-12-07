@@ -76,6 +76,11 @@ module.exports = class extends Events {
 			this.addService(new Service.HumiditySensor(`${this.name} - luftfuktighet`, this.UUID));
 			this.enableCurrentRelativeHumidity(Service.HumiditySensor);		
 		}
+		if (this.device.capabilitiesObj['measure_battery']) {
+			this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
+			this.enableStatusLowBattery(Service.Battery);		
+			this.enableBatteryLevel(Service.Battery);		
+		}
 
 		if (this.services.length == 0) {
 			throw new Error(`No service available for device '${this.name}'`);
@@ -425,6 +430,60 @@ module.exports = class extends Events {
 			characteristic.updateValue(currentRelativeHumidity);
 		});
 	}
+
+
+	enableStatusLowBattery(service) {
+		let capabilityID = 'measure_battery';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined) return;
+
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.StatusLowBattery);
+		let BATTERY_LEVEL_NORMAL = characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
+		let BATTERY_LEVEL_LOW = characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
+		let currentValue = capability.value <= 20 ? BATTERY_LEVEL_LOW : BATTERY_LEVEL_NORMAL;
+
+		characteristic.updateValue(currentValue);
+
+		if (characteristic.getable) {
+			characteristic.on('get', (callback) => {
+				callback(null, currentValue);
+			});
+		}
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+
+			this.debug(`Updating "${this.name}" ${capabilityID} to ${currentValue} (${this.device.id}).`);
+			characteristic.updateValue(currentValue);
+		});
+	}
+
+	enableBatteryLevel(service) {
+		let capabilityID = 'measure_battery';
+		let capability = this.device.capabilitiesObj[capabilityID];
+
+		if (capability == undefined) return;
+
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.BatteryLevel);
+		let currentValue = capability.value;
+
+		characteristic.updateValue(batteryLevel);
+
+		if (characteristic.getable) {
+			characteristic.on('get', (callback) => {
+				callback(null, currentValue);
+			});
+		}
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+
+			this.debug(`Updating "${this.name}" ${capabilityID} to ${currentValue} (${this.device.id}).`);
+			characteristic.updateValue(currentValue);
+		});
+	}
+
 
 	enableMotionDetected(service) {
 		let capabilityID = 'alarm_motion';
