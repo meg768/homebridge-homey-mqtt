@@ -316,7 +316,7 @@ module.exports = class extends Events {
 
 		this.on(capabilityID, (value) => {
 			// Hmm. Values min/max special case due to on/off
-			if (value == capability.min || value == capability.max) return;
+			//if (value == capability.min || value == capability.max) return;
 
 			currentValue = value;
 			value = toHomeKit(value);
