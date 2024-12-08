@@ -186,7 +186,7 @@ module.exports = class extends Events {
 		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
 		let capability = this.device.capabilitiesObj[capabilityID];
 		let currentValue = capability.value;
-		
+
 		characteristic.updateValue(currentValue);
 
 		characteristic.onGet(async () => {
@@ -387,7 +387,7 @@ module.exports = class extends Events {
 		this.on(capabilityID, (value) => {
 			currentValue = value;
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${value}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
 			characteristic.updateValue(value);
 		});
 	}
@@ -430,22 +430,24 @@ module.exports = class extends Events {
 		let capabilityID = 'measure_battery';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
+		if (capability == undefined) {
+			return;
+		}
 
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.StatusLowBattery);
-		let currentValue = isLowBattery(capability.value);
+		let currentValue = capability.value;
 
-		characteristic.updateValue(currentValue);
+		characteristic.updateValue(isLowBattery(currentValue));
 
 		characteristic.onGet(async () => {
-			return currentValue;
+			return isLowBattery(currentValue);
 		});
 
 		this.on(capabilityID, (value) => {
-			currentValue = isLowBattery(value);
-
-			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
-			characteristic.updateValue(currentValue);
+			currentValue = value;
+			value = isLowBattery(value);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+			characteristic.updateValue(value);
 		});
 	}
 
