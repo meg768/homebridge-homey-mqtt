@@ -280,7 +280,7 @@ module.exports = class extends Events {
 		});
 	}
 
-	enableBrightness(service) {
+	enableBrightnessYY(service) {
 		let capabilityID = 'dim';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
@@ -331,7 +331,7 @@ module.exports = class extends Events {
 	}
 
 
-	enableBrightnessX(service) {
+	enableBrightness(service) {
 		let capabilityID = 'dim';
 
 		if (this.device.capabilitiesObj[capabilityID] == undefined) {
