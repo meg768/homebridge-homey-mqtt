@@ -177,7 +177,7 @@ module.exports = class extends Events {
 
 	enableOnOff(service) {
 
-		let capabilityID = 'dim';
+		let capabilityID = 'onoff';
 
 		if (this.device.capabilitiesObj[capabilityID] == undefined) {
 			return;
