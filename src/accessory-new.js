@@ -131,39 +131,6 @@ module.exports = class extends Events {
 		this.getService(service).getCharacteristic(characteristic).updateValue(value);
 	}
 
-	enableCharacteristicGet(service, characteristic, getter) {
-		service = this.getService(service);
-
-		if (typeof getter === 'function') {
-			service.getCharacteristic(characteristic).on('get', async (callback) => {
-				try {
-					var value = await getter();
-					callback(null, value);
-				} catch (error) {
-					this.log(error);
-					callback();
-				}
-			});
-		}
-	}
-
-	enableCharacteristicSet(service, characteristic, setter) {
-		service = this.getService(service);
-
-
-		if (typeof setter === 'function') {
-			service.getCharacteristic(characteristic).on('set', async (value, callback) => {
-				try {
-					await setter(value);
-				} catch (error) {
-					this.log(error);
-				} finally {
-					callback();
-				}
-			});
-		}
-	}
-
 
 	enableCharacteristic(service, characteristic, getter, setter) {
 		service = this.getService(service);
@@ -208,30 +175,17 @@ module.exports = class extends Events {
 		}.call(args);
 	}
 
-	updateCharacteristicValueFromCapabilityID(characteristic, value, capabilityID) {
-		this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
-		characteristic.updateValue(value);
-	}
-
 	enableOnOff(service) {
 
-		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
-		let capabilityID = 'onoff';
-		let capability = this.device.capabilitiesObj[capabilityID];
+		let capabilityID = 'dim';
 
-		if (capability == undefined) {
+		if (this.device.capabilitiesObj[capabilityID] == undefined) {
 			return;
 		}
 
-		let valueToHomeKit = (value) => {
-			return value;
-		}
-		
-		let valueToHomey = (value) => {
-			return value;
-		}
-
-		let currentValue = valueToHomeKit(capability.value);
+		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
+		let capability = this.device.capabilitiesObj[capabilityID];
+		let currentValue = capability.value;
 
 		characteristic.updateValue(currentValue);
 
@@ -241,56 +195,16 @@ module.exports = class extends Events {
 
 		characteristic.onSet(async (value) => {
 			currentValue = value;
-			await this.publish(capabilityID, valueToHomey(currentValue));
+			await this.publish(capabilityID, currentValue);
 		});
 
 		this.on(capabilityID, (value) => {
-			currentValue = valueToHomeKit(value);
-			this.updateCharacteristicValueFromCapabilityID(characteristic, currentValue, capabilityID);
-			//this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
-			//characteristic.updateValue(currentValue);
-			//this.updateCharacteristicValueFromCapabilityID(characteristic, currentValue, capabilityID);
+			currentValue = value
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
+			characteristic.updateValue(currentValue);
 		});
 	}
 
-
-	enableOnOffX(service) {
-		let capabilityID = 'onoff';
-		let capability = this.device.capabilitiesObj[capabilityID];
-
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.On);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let onoff = capability.value ? true : false;
-
-//		this.enableCharacteristic(service, Characteristic.On, getLockState, setLockState);
-
-
-		characteristic.updateValue(onoff);
-
-		if (capability.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, onoff);
-			});
-		}
-
-		if (capability.setable) {
-			characteristic.on('set', async (value, callback) => {
-				this.debug(`Setting device ${this.name}/${capabilityID} to ${value} (${deviceCapabilityID}).`);
-				await this.publish(capabilityID, value);
-				onoff = value;
-				callback();
-			});
-		}
-
-		this.on(capabilityID, (value) => {
-			onoff = value;
-			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name})`);
-
-			characteristic.updateValue(onoff);
-		});
-	}
 
 	enableLock(service) {
 		var UNSECURED = Characteristic.LockCurrentState.UNSECURED;
@@ -346,24 +260,23 @@ module.exports = class extends Events {
 		let capabilityID = 'measure_luminance';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentAmbientLightLevel);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let currentAmbientLightLevel = capability.value;
-
-		characteristic.updateValue(currentAmbientLightLevel);
-
-		if (capability.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, currentAmbientLightLevel);
-			});
+		if (capability == undefined) {
+			return;
 		}
 
-		this.on(capabilityID, (value) => {
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentAmbientLightLevel);
+		let currentValue = capability.value;
 
-			characteristic.updateValue((currentAmbientLightLevel = value));
+		characteristic.updateValue(currentValue);
+
+		characteristic.onGet(async () => {
+			return currentValue;
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
+			characteristic.updateValue(currentValue);
 		});
 	}
 
@@ -417,52 +330,90 @@ module.exports = class extends Events {
 		});
 	}
 
-	enableColorTemperature(service) {
-		let capabilityID = 'light_temperature';
+
+	enableBrightnessX(service) {
+		let capabilityID = 'dim';
+
+		if (this.device.capabilitiesObj[capabilityID] == undefined) {
+			return;
+		}
+
 		let capability = this.device.capabilitiesObj[capabilityID];
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.Brightness);
+		let currentValue = capability.value;
 
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.ColorTemperature);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let colorTemperature = capability.value;
-
-		let value = capability.value;
-		value = (value - capability.min) / (capability.max - capability.min);
-		value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
-		characteristic.updateValue(value);
-
-		if (capability.getable) {
-			characteristic.on('get', (callback) => {
-				let value = colorTemperature;
-
-				value = (value - capability.min) / (capability.max - capability.min);
-				value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
-
-				callback(null, value);
-			});
-		}
-
-		if (capability.setable) {
-			characteristic.on('set', async (value, callback) => {
-				value = (value - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
-				value = value * (capability.max - capability.min) + capability.min;
-
-				this.publish(capabilityID, value);
-
-				colorTemperature = value;
-				callback();
-			});
-		}
-
-		this.on(capabilityID, (value) => {
-			colorTemperature = value;
-
+		let toHomeKit = (value) => {
 			value = (value - capability.min) / (capability.max - capability.min);
 			value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
+			return value;
+		}
 
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
+		let toHomey = (value) => {
+			value = (value - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
+			value = value * (capability.max - capability.min) + capability.min;
+			return value;
+		}
 
+		characteristic.updateValue(toHomeKit(currentValue));
+
+		characteristic.onGet(async () => {
+			return toHomeKit(currentValue);
+		});
+
+		characteristic.onSet(async (value) => {
+			currentValue = toHomey(value);
+			await this.publish(capabilityID, currentValue);
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+			value = toHomeKit(value);
+
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+			characteristic.updateValue(value);
+		});
+	}
+
+	enableColorTemperature(service) {
+
+		let capabilityID = 'light_temperature';
+
+		if (this.device.capabilitiesObj[capabilityID] == undefined) {
+			return;
+		}
+
+		let capability = this.device.capabilitiesObj[capabilityID];
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.ColorTemperature);
+		let currentValue = capability.value;
+
+		let toHomeKit = (value) => {
+			value = (value - capability.min) / (capability.max - capability.min);
+			value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
+			return value;
+		}
+
+		let toHomey = (value) => {
+			value = (value - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
+			value = value * (capability.max - capability.min) + capability.min;
+			return value;
+		}
+
+		characteristic.updateValue(toHomeKit(currentValue));
+
+		characteristic.onGet(async () => {
+			return toHomeKit(currentValue);
+		});
+
+		characteristic.onSet(async (value) => {
+			currentValue = toHomey(value);
+			await this.publish(capabilityID, currentValue);
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+			value = toHomeKit(value);
+
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
 			characteristic.updateValue(value);
 		});
 	}
@@ -471,25 +422,24 @@ module.exports = class extends Events {
 		let capabilityID = 'measure_temperature';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentTemperature);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let currentTemperature = capability.value;
-
-		characteristic.updateValue(currentTemperature);
-
-		if (characteristic.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, currentTemperature);
-			});
+		if (capability == undefined) {
+			return;
 		}
 
-		this.on(capabilityID, (value) => {
-			currentTemperature = value;
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentTemperature);
+		let currentValue = capability.value;
 
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
-			characteristic.updateValue(currentTemperature);
+		characteristic.updateValue(currentValue);
+
+		characteristic.onGet(async () => {
+			return currentValue;
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+			characteristic.updateValue(value);
 		});
 	}
 
@@ -497,24 +447,24 @@ module.exports = class extends Events {
 		let capabilityID = 'measure_humidity';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentRelativeHumidity);
-		let currentRelativeHumidity = capability.value;
-
-		characteristic.updateValue(currentRelativeHumidity);
-
-		if (characteristic.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, currentRelativeHumidity);
-			});
+		if (capability == undefined) {
+			return;
 		}
 
-		this.on(capabilityID, (value) => {
-			currentRelativeHumidity = value;
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.CurrentRelativeHumidity);
+		let currentValue = capability.value;
 
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
-			characteristic.updateValue(currentRelativeHumidity);
+		characteristic.updateValue(currentValue);
+
+		characteristic.onGet(async () => {
+			return currentValue;
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+			characteristic.updateValue(value);
 		});
 	}
 
@@ -531,24 +481,24 @@ module.exports = class extends Events {
 		let capabilityID = 'measure_battery';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.StatusLowBattery);
-		let currentValue = isLowBattery(capability.value);
-
-		characteristic.updateValue(currentValue);
-
-		if (characteristic.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, currentValue);
-			});
+		if (capability == undefined) {
+			return;
 		}
 
-		this.on(capabilityID, (value) => {
-			currentValue = isLowBattery(value);
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.StatusLowBattery);
+		let currentValue = capability.value;
 
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${currentValue} (${this.device.id}).`);
-			characteristic.updateValue(currentValue);
+		characteristic.updateValue(isLowBattery(currentValue));
+
+		characteristic.onGet(async () => {
+			return isLowBattery(currentValue);
+		});
+
+		this.on(capabilityID, (value) => {
+			currentValue = value;
+			value = isLowBattery(value);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
+			characteristic.updateValue(value);
 		});
 	}
 
@@ -563,16 +513,15 @@ module.exports = class extends Events {
 
 		characteristic.updateValue(currentValue);
 
-		if (characteristic.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, currentValue);
-			});
-		}
+		characteristic.onGet(async () => {
+			return currentValue;
+		});
+
 
 		this.on(capabilityID, (value) => {
 			currentValue = value;
 
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${currentValue} (${this.device.id}).`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
 			characteristic.updateValue(currentValue);
 		});
 	}
@@ -582,36 +531,23 @@ module.exports = class extends Events {
 		let capabilityID = 'alarm_motion';
 		let capability = this.device.capabilitiesObj[capabilityID];
 
-		if (capability == undefined) return;
+		if (capability == undefined) {
+			return;
+		}
 
 		let characteristic = this.getService(service).getCharacteristic(Characteristic.MotionDetected);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-		let motionDetected = capability.value;
+		let currentValue = capability.value;
 
-		characteristic.updateValue(motionDetected);
+		characteristic.updateValue(currentValue);
 
-		if (capability.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, motionDetected);
-			});
-		}
-
-		if (capability.setable) {
-			characteristic.on('set', async (value, callback) => {
-				await this.publish(capabilityID, value);
-				motionDetected = value;
-				callback();
-			});
-		}
+		characteristic.onGet(async () => {
+			return currentValue;
+		});
 
 		this.on(capabilityID, (value) => {
-			motionDetected = value;
-			//			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
-			//			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name}).`);
-			//            this.debug(`Updating "${this.name}" - ${deviceCapabilityID}:${value}`);
-			this.debug(`Updating ${deviceCapabilityID}:${value} (${this.name})`);
-
-			characteristic.updateValue(motionDetected);
+			currentValue = value;
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
+			characteristic.updateValue(currentValue);
 		});
 	}
 
