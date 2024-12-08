@@ -321,7 +321,7 @@ module.exports = class extends Events {
 			currentValue = value;
 			value = toHomeKit(value);
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${value}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
 			characteristic.updateValue(value);
 		});
 	}
