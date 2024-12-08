@@ -183,7 +183,7 @@ module.exports = class extends Events {
 			return;
 		}
 
-		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
+		let characteristic = this.getService(service).getCharacteristic(Characteristic.On);
 		let capability = this.device.capabilitiesObj[capabilityID];
 		let currentValue = capability.value;
 
