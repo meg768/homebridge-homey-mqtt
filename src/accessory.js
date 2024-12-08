@@ -329,7 +329,7 @@ module.exports = class extends Events {
 			characteristic.updateValue(brightness);
 		});
 	}
-X
+
 
 	enableBrightnessX(service) {
 		let capabilityID = 'dim';
