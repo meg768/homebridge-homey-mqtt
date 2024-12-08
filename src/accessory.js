@@ -177,15 +177,16 @@ module.exports = class extends Events {
 
 	enableOnOff(service) {
 
-		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
-		let capabilityID = 'onoff';
-		let capability = this.device.capabilitiesObj[capabilityID];
+		let capabilityID = 'dim';
 
-		if (capability == undefined) {
+		if (this.device.capabilitiesObj[capabilityID] == undefined) {
 			return;
 		}
 
+		let characteristic = this.getServiceCharacteristic(service, Characteristic.On);
+		let capability = this.device.capabilitiesObj[capabilityID];
 		let currentValue = capability.value;
+		
 		characteristic.updateValue(currentValue);
 
 		characteristic.onGet(async () => {
@@ -312,12 +313,8 @@ module.exports = class extends Events {
 			currentValue = toHomey(value);
 			await this.publish(capabilityID, currentValue);
 		});
-		
 
 		this.on(capabilityID, (value) => {
-			// Hmm. Values min/max special case due to on/off
-			//if (value == capability.min || value == capability.max) return;
-
 			currentValue = value;
 			value = toHomeKit(value);
 
@@ -365,7 +362,7 @@ module.exports = class extends Events {
 			currentValue = value;
 			value = toHomeKit(value);
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${value}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
 			characteristic.updateValue(value);
 		});
 	}
@@ -415,7 +412,7 @@ module.exports = class extends Events {
 		this.on(capabilityID, (value) => {
 			currentValue = value;
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${value}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${value}`);
 			characteristic.updateValue(value);
 		});
 	}
@@ -447,7 +444,7 @@ module.exports = class extends Events {
 		this.on(capabilityID, (value) => {
 			currentValue = isLowBattery(value);
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
 			characteristic.updateValue(currentValue);
 		});
 	}
@@ -471,7 +468,7 @@ module.exports = class extends Events {
 		this.on(capabilityID, (value) => {
 			currentValue = value;
 
-			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
 			characteristic.updateValue(currentValue);
 		});
 	}
@@ -496,7 +493,7 @@ module.exports = class extends Events {
 
 		this.on(capabilityID, (value) => {
 			currentValue = value;
-			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}.`);
+			this.debug(`Updating ${this.name}/${capabilityID}:${currentValue}`);
 			characteristic.updateValue(currentValue);
 		});
 	}
