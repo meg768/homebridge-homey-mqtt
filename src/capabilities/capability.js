@@ -2,8 +2,6 @@ var { API, Service, Characteristic } = require('./homebridge.js');
 
 module.exports = class {
 	constructor(options) {
-		super();
-
 		let { accessory, service, optional = false } = options;
 
 		this.device = accessory.device;
