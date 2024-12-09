@@ -7,7 +7,7 @@ module.exports = class extends Capability {
 	}
 
 	getCapabilityID() {
-		return "onoff";
+		return 'onoff';
 	}
 
 	getCharacteristic() {

@@ -41,12 +41,14 @@ module.exports = class extends Events {
 			}
 			case 'light': {
 				let OnOff = require('./capabilities/onoff.js');
+				let Dim = require('./capabilities/dim.js');
 
 				let service = new Service.Lightbulb(this.name, this.UUID);
 				this.capabilities.push(new OnOff({acccessory:this, service:service, optional:false}));
+				this.capabilities.push(new Dim({acccessory:this, service:service, optional:true}));
 				//this.addService(new Service.Lightbulb(this.name, this.UUID));
 				//this.enableOnOff(Service.Lightbulb);
-				this.enableBrightness(service);
+				//this.enableBrightness(service);
 				this.enableColorTemperature(service);
 
 				this.addService(service);

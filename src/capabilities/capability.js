@@ -28,6 +28,10 @@ module.exports = class {
 	getCharacteristic() {
 	}
 
+	getCapability() {
+		return this.device.capabilitiesObj[this.getCapabilityID()]; 
+	}
+
 	toHomey(value) {
 		return value;		
 	}
