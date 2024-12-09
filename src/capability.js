@@ -11,7 +11,7 @@ module.exports = class {
 		this.service = service;
 		this.capability = this.device.capabilitiesObj[this.getCapabilityID()];
 
-		if (!optional && capability == undefined) {
+		if (!optional && this.capability == undefined) {
 			throw new Error(`Capability '${this.getCapabilityID()}' not found.`);
 		}
 
