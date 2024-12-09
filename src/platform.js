@@ -54,7 +54,7 @@ module.exports = class Platform {
                 accessories.push(new Accessory({device:device, platform:this}));
             }
             catch(error) {
-				this.debug(`Could not create device '${device.name}'. ${error.message}`);
+				this.debug(`Could not create device '${device.name}'. ${error.stack}`);
             }
 	
 		}
