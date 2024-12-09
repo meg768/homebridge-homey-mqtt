@@ -44,8 +44,8 @@ module.exports = class extends Events {
 				let Dim = require('./capabilities/dim.js');
 
 				let service = new Service.Lightbulb(this.name, this.UUID);
-				this.capabilities.push(new OnOff({acccessory:this, service:service, optional:false}));
-				this.capabilities.push(new Dim({acccessory:this, service:service, optional:true}));
+				this.capabilities.push(new OnOff({accessory:this, service:service, optional:false}));
+				this.capabilities.push(new Dim({accessory:this, service:service, optional:true}));
 				this.addService(service);
 				/*
 				this.addService(new Service.Lightbulb(this.name, this.UUID));
