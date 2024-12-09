@@ -49,8 +49,8 @@ module.exports = class extends Events {
 				//this.addService(service);
 				this.addService(new Service.Lightbulb(this.name, this.UUID));
 				this.enableOnOff(Service.Lightbulb);
-				this.enableBrightness(service);
-				this.enableColorTemperature(service);
+				this.enableBrightness(Service.Lightbulb);
+				this.enableColorTemperature(Service.Lightbulb);
 
 				break;
 			}
