@@ -56,7 +56,7 @@ module.exports = class {
 		});
 
 		this.accessory.on(capabilityID, (value) => {
-			currentValue = value
+			currentValue = this.toHomeKit(value);
 			this.debug(`Updating ${this.accessory.name}/${capabilityID}:${currentValue}`);
 			characteristic.updateValue(currentValue);
 		});
