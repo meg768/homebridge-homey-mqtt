@@ -27,7 +27,6 @@ module.exports = class extends Events {
 		this.debug = platform.debug;
 		this.services = [];
 
-
 		switch (this.device.class) {
 			case 'tv': {
 				this.addService(new Service.Television(this.name, this.UUID));
