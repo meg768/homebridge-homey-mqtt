@@ -280,56 +280,6 @@ module.exports = class extends Events {
 		});
 	}
 
-	enableBrightnessFaulty(service) {
-		let capabilityID = 'dim';
-		let capability = this.device.capabilitiesObj[capabilityID];
-
-		if (capability == undefined) return;
-
-		let characteristic = this.getService(service).getCharacteristic(Characteristic.Brightness);
-		let deviceCapabilityID = `${this.device.id}/${capability.id}`;
-
-		let value = capability.value;
-		value = (value - capability.min) / (capability.max - capability.min);
-		value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
-		characteristic.updateValue(value);
-
-		let brightness = value;
-
-		if (capability.getable) {
-			characteristic.on('get', (callback) => {
-				callback(null, brightness);
-			});
-		}
-
-		if (capability.setable) {
-			characteristic.on('set', async (value, callback) => {
-				let convertedValue = value;
-				convertedValue = (convertedValue - characteristic.props.minValue) / (characteristic.props.maxValue - characteristic.props.minValue);
-				convertedValue = convertedValue * (capability.max - capability.min) + capability.min;
-
-				await this.publish(capabilityID, convertedValue);
-
-				brightness = value;
-				callback();
-			});
-		}
-
-		this.on(capabilityID, (value) => {
-			// Hmm. Values min/max special case due to on/off
-			if (value == capability.min || value == capability.max) return;
-
-			value = (value - capability.min) / (capability.max - capability.min);
-			value = value * (characteristic.props.maxValue - characteristic.props.minValue) + characteristic.props.minValue;
-
-			brightness = value;
-
-			this.debug(`Updating "${this.name}" ${capabilityID} to ${value} (${this.device.id}).`);
-
-			characteristic.updateValue(brightness);
-		});
-	}
-
 
 	enableBrightness(service) {
 		let capabilityID = 'dim';
