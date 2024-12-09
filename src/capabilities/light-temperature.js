@@ -8,7 +8,7 @@ module.exports = class extends Capability {
 	}
 
 	getCapabilityID() {
-		return 'light-temperature';
+		return 'light_temperature';
 	}
 
 	getCharacteristic() {
