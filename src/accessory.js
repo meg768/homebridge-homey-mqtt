@@ -4,6 +4,11 @@ var Timer = require('yow/timer');
 
 module.exports = class extends Events {
 	constructor(options) {
+		let On = require('./capabilities/on.js');
+		let Brightness = require('./capabilities/brightness.js');
+		let ColorTemperature = require('./capabilities/color-temperature.js');
+		let MotionDetected = require('./capabilities/motion-detected.js');
+
 		super();
 
 		let { device, platform } = options;
@@ -26,54 +31,42 @@ module.exports = class extends Events {
 		this.log = platform.log;
 		this.debug = platform.debug;
 		this.services = [];
+		this.caps = {};
 
 		switch (this.device.class) {
 			case 'tv': {
-				this.addService(new Service.Television(this.name, this.UUID));
-				this.enableOnOff(Service.Television);
+				let service = this.addService(new Service.Television(this.name, this.UUID));
+				this.caps.on = new On({accessory:this, service:service, optional:false});
 				break;
 			}
 			case 'socket': {
-				this.addService(new Service.Outlet(this.name, this.UUID));
-				this.enableOnOff(Service.Outlet);
+				let service = this.addService(new Service.Outlet(this.name, this.UUID));
+				this.caps.on = new On({accessory:this, service:service, optional:false});
 				break;
 			}
 			case 'light': {
-				let On = require('./capabilities/on.js');
-				let Brightness = require('./capabilities/brightness.js');
-				let ColorTemperature = require('./capabilities/color-temperature.js');
-
-				this.addService(new Service.Lightbulb(this.name, this.UUID));
-				this.On = new On({accessory:this, service:this.getService(Service.Lightbulb), optional:false});
-				this.Brightness = new Brightness({accessory:this, service:this.getService(Service.Lightbulb), optional:true});
-				this.ColorTemperature = new ColorTemperature({accessory:this, service:this.getService(Service.Lightbulb), optional:true});
-
-				/*
-				this.addService(new Service.Lightbulb(this.name, this.UUID));
-				this.enableOnOff(Service.Lightbulb);
-				this.enableBrightness(Service.Lightbulb);
-				this.enableColorTemperature(Service.Lightbulb);
-				*/
+				let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
+				this.caps.on = new On({accessory:this, service:service, optional:false});
+				this.caps.brightness = new Brightness({accessory:this, service:service, optional:true});
+				this.caps.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
 
 				break;
 			}
 			case 'lock': {
-				this.addService(new Service.LockMechanism(this.name, this.UUID));
-				this.enableLock(Service.LockMechanism);
 				break;
 			}
 			default: {
 				if (device.capabilitiesObj.onoff) {
-					this.addService(new Service.Switch(this.name, this.UUID));
-					this.enableOnOff(Service.Switch);
+					let service = this.addService(new Service.Switch(this.name, this.UUID));
+					this.caps.on = new On({accessory:this, service:service, optional:false});
 				}
 				break;
 			}
 		}
 
 		if (this.device.capabilitiesObj['alarm_motion']) {
-			this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
-			this.enableMotionDetected(Service.MotionSensor);	
+			let service = this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
+			this.caps.motionDetected = new MotionDetected({accessory:this, service:service, optional:true});
 		}
 		if (this.device.capabilitiesObj['measure_temperature']) {
 			this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
@@ -114,6 +107,7 @@ module.exports = class extends Events {
 
 	addService(service) {
 		this.services.push(service);
+		return service;
 	}
 
 	getServices() {
