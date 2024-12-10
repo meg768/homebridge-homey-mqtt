@@ -4,7 +4,7 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super({capabiltyID:'dim', ...options});
+		super({capabilityID:'dim', ...options});
 	}
 
 	getCapabilityID() {

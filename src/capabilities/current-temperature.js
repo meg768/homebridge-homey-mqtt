@@ -3,7 +3,7 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super({capabiltyID:'measure_temperature', ...options});
+		super({capabilityID:'measure_temperature', ...options});
 	}
 
 	getCharacteristic() {
