@@ -13,6 +13,8 @@ module.exports = class extends Events {
 		let CurrentTemperature = require('./capabilities/current-temperature.js');
 		let BatteryLevel = require('./capabilities/battery-level.js');
 		let StatusLowBattery = require('./capabilities/status-low-battery.js');
+		let Hue = require('./capabilities/hue.js');
+		let Saturation = require('./capabilities/saturation.js');
 		
 		super();
 
@@ -54,6 +56,8 @@ module.exports = class extends Events {
 				this.caps.on = new On({accessory:this, service:service, optional:false});
 				this.caps.brightness = new Brightness({accessory:this, service:service, optional:true});
 				this.caps.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
+				this.caps.hue = new Hue({accessory:this, service:service, optional:true});
+				this.caps.saturation = new Saturation({accessory:this, service:service, optional:true});
 
 				break;
 			}
