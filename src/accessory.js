@@ -55,9 +55,14 @@ module.exports = class extends Events {
 				let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
 				this.caps.on = new On({accessory:this, service:service, optional:false});
 				this.caps.brightness = new Brightness({accessory:this, service:service, optional:true});
-				this.caps.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
-				this.caps.hue = new Hue({accessory:this, service:service, optional:true});
-				this.caps.saturation = new Saturation({accessory:this, service:service, optional:true});
+
+				if (this.device.capabilitiesObj.light_hue) {
+					this.caps.hue = new Hue({accessory:this, service:service, optional:true});
+					this.caps.saturation = new Saturation({accessory:this, service:service, optional:true});	
+				}
+				else {
+					this.caps.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
+				}
 
 				break;
 			}
