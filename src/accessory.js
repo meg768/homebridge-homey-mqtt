@@ -99,18 +99,13 @@ module.exports = class extends Events {
 			throw new Error(`No service available for device '${this.name}'`);
 		}
 
-
-		this.addService(new Service.AccessoryInformation());
-		this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.FirmwareRevision, '1.0');
-		this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.Model, this.device.driverId);
-		this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.Manufacturer, this.device.driverUri);
-		this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.SerialNumber, this.device.id);
-
-		try {
-			this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.Manufacturer, this.device.settings['zb_manufacturer_name']);
-			this.updateCharacteristicValue(Service.AccessoryInformation, Characteristic.Model, this.device.settings['zb_product_id']);
-		} catch (error) {}
-
+		if (true) {
+			let service = this.addService(new Service.AccessoryInformation());
+			service.getCharacteristic(Characteristic.FirmwareRevision).updateValue('1.0');
+			service.getCharacteristic(Characteristic.Model).updateValue(this.device.driverId);
+			service.getCharacteristic(Characteristic.Manufacturer).updateValue(this.device.driverUri);
+			service.getCharacteristic(Characteristic.SerialNumber).updateValue(this.device.id);
+		}
 	}
 
 
