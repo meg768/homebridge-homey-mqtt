@@ -38,26 +38,26 @@ module.exports = class extends Events {
 		this.log = platform.log;
 		this.debug = platform.debug;
 		this.services = [];
-		this.caps = {};
+		this.capabilities = {};
 
 		switch (this.device.class) {
 			case 'tv': {
 				let service = this.addService(new Service.Television(this.name, this.UUID));
-				this.caps.on = new On({accessory:this, service:service, optional:false});
+				this.capabilities.on = new On({accessory:this, service:service, optional:false});
 				break;
 			}
 			case 'socket': {
 				let service = this.addService(new Service.Outlet(this.name, this.UUID));
-				this.caps.on = new On({accessory:this, service:service, optional:false});
+				this.capabilities.on = new On({accessory:this, service:service, optional:false});
 				break;
 			}
 			case 'light': {
 				let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
-				this.caps.on = new On({accessory:this, service:service, optional:false});
-				this.caps.brightness = new Brightness({accessory:this, service:service, optional:true});
-				this.caps.hue = new Hue({accessory:this, service:service, optional:true});
-				this.caps.saturation = new Saturation({accessory:this, service:service, optional:true});	
-				this.caps.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
+				this.capabilities.on = new On({accessory:this, service:service, optional:false});
+				this.capabilities.brightness = new Brightness({accessory:this, service:service, optional:true});
+				this.capabilities.hue = new Hue({accessory:this, service:service, optional:true});
+				this.capabilities.saturation = new Saturation({accessory:this, service:service, optional:true});	
+				this.capabilities.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
 
 				break;
 			}
@@ -67,7 +67,7 @@ module.exports = class extends Events {
 			default: {
 				if (device.capabilitiesObj.onoff) {
 					let service = this.addService(new Service.Switch(this.name, this.UUID));
-					this.caps.on = new On({accessory:this, service:service, optional:false});
+					this.capabilities.on = new On({accessory:this, service:service, optional:false});
 				}
 				break;
 			}
@@ -75,24 +75,24 @@ module.exports = class extends Events {
 
 		if (this.device.capabilitiesObj.alarm_motion) {
 			let service = this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
-			this.caps.motionDetected = new MotionDetected({accessory:this, service:service, optional:false});
+			this.capabilities.motionDetected = new MotionDetected({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_temperature) {
 			let service = this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
-			this.caps.currentTemperature = new CurrentTemperature({accessory:this, service:service, optional:false});
+			this.capabilities.currentTemperature = new CurrentTemperature({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_luminance) {
 			let service = this.addService(new Service.LightSensor(`${this.name} - ljusstyrka`, this.UUID));
-			this.caps.currentAmbientLightLevel = new CurrentAmbientLightLevel({accessory:this, service:service, optional:false});
+			this.capabilities.currentAmbientLightLevel = new CurrentAmbientLightLevel({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_humidity) {
 			let service = this.addService(new Service.HumiditySensor(`${this.name} - luftfuktighet`, this.UUID));
-			this.caps.currentRelativeHumidity = new CurrentRelativeHumidity({accessory:this, service:service, optional:false});
+			this.capabilities.currentRelativeHumidity = new CurrentRelativeHumidity({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_battery) {
 			let service = this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
-			this.caps.statusLowBattery = new StatusLowBattery({accessory:this, service:service, optional:false});
-			this.caps.batteryLevel = new BatteryLevel({accessory:this, service:service, optional:true});
+			this.capabilities.statusLowBattery = new StatusLowBattery({accessory:this, service:service, optional:false});
+			this.capabilities.batteryLevel = new BatteryLevel({accessory:this, service:service, optional:true});
 		}
 
 		if (this.services.length == 0) {
@@ -108,8 +108,6 @@ module.exports = class extends Events {
 		}
 	}
 
-
-
 	addService(service) {
 		this.services.push(service);
 		return service;
@@ -119,24 +117,10 @@ module.exports = class extends Events {
 		return this.services;
 	}
 
-	getService(name) {
-		if (name instanceof Service) return name;
-
-		for (var index in this.services) {
-			var service = this.services[index];
-
-			if (typeof name === 'string' && (service.displayName === name || service.name === name)) return service;
-			else if (typeof name === 'function' && (service instanceof name || name.UUID === service.UUID)) return service;
-		}
-	}
-
 	async publish(capabilityID, value) {
 		this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
 		await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
 	}
 
-	updateCharacteristicValue(service, characteristic, value) {
-		this.getService(service).getCharacteristic(characteristic).updateValue(value);
-	}
 
 };
