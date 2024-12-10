@@ -2,10 +2,14 @@ var { API, Service, Characteristic } = require('./homebridge.js');
 
 module.exports = class {
 	constructor(options) {
-		let { accessory, service, capabilityID, optional = false } = options;
+		let { accessory, service, capabilityID, characteristic, optional = false } = options;
 
 		if (capabilityID == undefined) {
 			throw new Error(`Capability ID must be specified.`);
+		}
+
+		if (characteristic == undefined) {
+			throw new Error(`A HomeKit characteristic must be specified.`);
 		}
 
 		this.device = accessory.device;
@@ -15,6 +19,7 @@ module.exports = class {
 		this.service = service;
 		this.capabilityID = capabilityID;
 		this.capability = this.device.capabilitiesObj[this.capabilityID];
+		this.characteristic = characteristic;
 
 		if (!optional && this.capability == undefined) {
 			throw new Error(`Capability '${this.capabilityID}' not found.`);
@@ -30,6 +35,7 @@ module.exports = class {
 	}
 
 	getCharacteristic() {
+		return this.service.getCharacteristic(this.characteristic);
 	}
 
 	getCapability() {

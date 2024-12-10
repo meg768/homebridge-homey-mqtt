@@ -3,13 +3,9 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super({capabilityID:'light_saturation', ...options});
+		super({capabilityID:'light_saturation', characteristic:Characteristic.Saturation, ...options});
 	}
 
-	getCharacteristic() {
-		return this.service.getCharacteristic(Characteristic.Saturation);
-	}
-	
 	toHomeKit(value) {
 		let characteristic = this.getCharacteristic();
 		let capability = this.getCapability();

@@ -3,12 +3,7 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super({capabilityID:'measure_luminance', ...options});
-	}
-
-
-	getCharacteristic() {
-		return this.service.getCharacteristic(Characteristic.CurrentAmbientLightLevel);
+		super({capabilityID:'measure_luminance', characteristic:Characteristic.CurrentAmbientLightLevel, ...options});
 	}
 
 };
