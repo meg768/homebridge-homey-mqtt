@@ -4,6 +4,10 @@ module.exports = class {
 	constructor(options) {
 		let { accessory, service, capabilityID, optional = false } = options;
 
+		if (capabilityID == undefined) {
+			throw new Error(`Capability ID must be specified.`);
+		}
+
 		this.device = accessory.device;
 		this.log = accessory.log;
 		this.debug = accessory.debug;
@@ -13,7 +17,7 @@ module.exports = class {
 		this.capability = this.device.capabilitiesObj[this.capabilityID];
 
 		if (!optional && this.capability == undefined) {
-			throw new Error(`Capability '${this.getCapabilityID()}' not found.`);
+			throw new Error(`Capability '${this.capabilityID}' not found.`);
 		}
 
 		if (this.capability) {
