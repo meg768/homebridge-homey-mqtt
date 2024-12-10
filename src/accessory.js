@@ -82,7 +82,7 @@ module.exports = class extends Events {
 			this.caps.currentAmbientLightLevel = new CurrentAmbientLightLevel({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_humidity) {
-			let service = this.addService(new Service.CurrentRelativeHumidity(`${this.name} - luftfuktighet`, this.UUID));
+			let service = this.addService(new Service.HumiditySensor(`${this.name} - luftfuktighet`, this.UUID));
 			this.caps.currentRelativeHumidity = new CurrentRelativeHumidity({accessory:this, service:service, optional:false});
 		}
 		if (this.device.capabilitiesObj.measure_battery) {
