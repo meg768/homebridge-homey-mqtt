@@ -26,7 +26,6 @@ module.exports = class extends Events {
 		this.log = platform.log;
 		this.debug = platform.debug;
 		this.services = [];
-		this.capabilities = [];
 
 		switch (this.device.class) {
 			case 'tv': {
@@ -40,15 +39,15 @@ module.exports = class extends Events {
 				break;
 			}
 			case 'light': {
-				let OnOff = require('./capabilities/onoff.js');
-				let Dim = require('./capabilities/dim.js');
-				let LightTemperature = require('./capabilities/light-temperature.js');
+				let On = require('./capabilities/on.js');
+				let Brightness = require('./capabilities/brightness.js');
+				let ColorTemperature = require('./capabilities/color-temperature.js');
 
-				let service = new Service.Lightbulb(this.name, this.UUID);
-				this.capabilities.push(new OnOff({accessory:this, service:service, optional:false}));
-				this.capabilities.push(new Dim({accessory:this, service:service, optional:true}));
-				this.capabilities.push(new LightTemperature({accessory:this, service:service, optional:true}));
-				this.addService(service);
+				this.addService(new Service.Lightbulb(this.name, this.UUID));
+				this.On = new On({accessory:this, service:this.getService(Service.Lightbulb), optional:false});
+				this.Brightness = new Brightness({accessory:this, service:this.getService(Service.Lightbulb), optional:true});
+				this.ColorTemperature = new ColorTemperature({accessory:this, service:this.getService(Service.Lightbulb), optional:true});
+
 				/*
 				this.addService(new Service.Lightbulb(this.name, this.UUID));
 				this.enableOnOff(Service.Lightbulb);
@@ -110,6 +109,8 @@ module.exports = class extends Events {
 		} catch (error) {}
 
 	}
+
+
 
 	addService(service) {
 		this.services.push(service);
