@@ -4,11 +4,7 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super(options);
-	}
-
-	getCapabilityID() {
-		return 'measure_battery';
+		super({capabiltyID:'measure_battery', ...options});
 	}
 
 	getCharacteristic() {
@@ -20,6 +16,5 @@ module.exports = class extends Capability {
 		let BATTERY_LEVEL_LOW = Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
 
 		return value <= 20 ? BATTERY_LEVEL_LOW : BATTERY_LEVEL_NORMAL;
-
 	}
 };

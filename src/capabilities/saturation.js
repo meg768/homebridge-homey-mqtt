@@ -3,11 +3,7 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
 	constructor(options) {
-		super(options);
-	}
-
-	getCapabilityID() {
-		return 'light_saturation';
+		super({capabiltyID:'light_saturation', ...options});
 	}
 
 	getCharacteristic() {

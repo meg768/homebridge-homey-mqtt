@@ -2,14 +2,15 @@ var { API, Service, Characteristic } = require('./homebridge.js');
 
 module.exports = class {
 	constructor(options) {
-		let { accessory, service, optional = false } = options;
+		let { accessory, service, capabilityID, optional = false } = options;
 
 		this.device = accessory.device;
 		this.log = accessory.log;
 		this.debug = accessory.debug;
 		this.accessory = accessory;
 		this.service = service;
-		this.capability = this.device.capabilitiesObj[this.getCapabilityID()];
+		this.capabilityID = capabilityID;
+		this.capability = this.device.capabilitiesObj[this.capabilityID];
 
 		if (!optional && this.capability == undefined) {
 			throw new Error(`Capability '${this.getCapabilityID()}' not found.`);
@@ -21,6 +22,7 @@ module.exports = class {
 	}
 
 	getCapabilityID() {
+		return this.capabilityID;
 	}
 
 	getCharacteristic() {
