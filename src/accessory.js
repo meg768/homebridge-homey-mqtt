@@ -8,12 +8,17 @@ module.exports = class extends Events {
 		let Brightness = require('./capabilities/brightness.js');
 		let ColorTemperature = require('./capabilities/color-temperature.js');
 		let MotionDetected = require('./capabilities/motion-detected.js');
-
+		let CurrentAmbientLightLevel = require('./capabilities/current-ambient-light-level.js');
+		let CurrentRelativeHumidity = require('./capabilities/current-relative-humidity.js');
+		let CurrentTemperature = require('./capabilities/current-temperature.js');
+		let BatteryLevel = require('./capabilities/battery-level.js');
+		let StatusLowBattery = require('./capabilities/status-low-battery.js');
+		
 		super();
 
 		let { device, platform } = options;
-		let uuid = device.id;
 
+		let uuid = device.id;
 		this.name = device.name;
 
 		// Apparently we need a display name...
@@ -64,26 +69,26 @@ module.exports = class extends Events {
 			}
 		}
 
-		if (this.device.capabilitiesObj['alarm_motion']) {
+		if (this.device.capabilitiesObj.alarm_motion) {
 			let service = this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
-			this.caps.motionDetected = new MotionDetected({accessory:this, service:service, optional:true});
+			this.caps.motionDetected = new MotionDetected({accessory:this, service:service, optional:false});
 		}
-		if (this.device.capabilitiesObj['measure_temperature']) {
-			this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
-			this.enableCurrentTemperature(Service.TemperatureSensor);		
+		if (this.device.capabilitiesObj.measure_temperature) {
+			let service = this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
+			this.caps.currentTemperature = new CurrentTemperature({accessory:this, service:service, optional:false});
 		}
-		if (this.device.capabilitiesObj['measure_luminance']) {
-			this.addService(new Service.LightSensor(`${this.name} - ljusstyrka`, this.UUID));
-			this.enableLightSensor(Service.LightSensor);			
+		if (this.device.capabilitiesObj.measure_luminance) {
+			let service = this.addService(new Service.LightSensor(`${this.name} - ljusstyrka`, this.UUID));
+			this.caps.currentAmbientLightLevel = new CurrentAmbientLightLevel({accessory:this, service:service, optional:false});
 		}
-		if (this.device.capabilitiesObj['measure_humidity']) {
-			this.addService(new Service.HumiditySensor(`${this.name} - luftfuktighet`, this.UUID));
-			this.enableCurrentRelativeHumidity(Service.HumiditySensor);		
+		if (this.device.capabilitiesObj.measure_humidity) {
+			let service = this.addService(new Service.CurrentRelativeHumidity(`${this.name} - luftfuktighet`, this.UUID));
+			this.caps.currentRelativeHumidity = new CurrentRelativeHumidity({accessory:this, service:service, optional:false});
 		}
-		if (this.device.capabilitiesObj['measure_battery']) {
-			this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
-			this.enableStatusLowBattery(Service.Battery);
-			this.enableBatteryLevel(Service.Battery);		
+		if (this.device.capabilitiesObj.measure_battery) {
+			let service = this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
+			this.caps.statusLowBattery = new StatusLowBattery({accessory:this, service:service, optional:false});
+			this.caps.batteryLevel = new BatteryLevel({accessory:this, service:service, optional:true});
 		}
 
 		if (this.services.length == 0) {
