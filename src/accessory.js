@@ -41,37 +41,46 @@ module.exports = class extends Events {
 		this.capabilities = {};
 
 		switch (this.device.class) {
-			case 'tv': {
-				let service = this.addService(new Service.Television(this.name, this.UUID));
-				this.capabilities.on = new On({accessory:this, service:service, optional:false});
-				break;
-			}
-			case 'socket': {
-				let service = this.addService(new Service.Outlet(this.name, this.UUID));
-				this.capabilities.on = new On({accessory:this, service:service, optional:false});
-				break;
-			}
-			case 'light': {
-				let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
-				this.capabilities.on = new On({accessory:this, service:service, optional:false});
-				this.capabilities.brightness = new Brightness({accessory:this, service:service, optional:true});
-				this.capabilities.hue = new Hue({accessory:this, service:service, optional:true});
-				this.capabilities.saturation = new Saturation({accessory:this, service:service, optional:true});	
-				this.capabilities.colorTemperature = new ColorTemperature({accessory:this, service:service, optional:true});
+            case "tv": {
+                let service = this.addService(new Service.Television(this.name, this.UUID));
+                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                break;
+            }
+            case "socket": {
+                let service = this.addService(new Service.Outlet(this.name, this.UUID));
+                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                break;
+            }
+            case "lock": {
+				let LockCurrentState = require("./capabilities/lock-current-state.js");
+				let LockTargetState = require("./capabilities/lock-target-state.js");
 
-				break;
-			}
-			case 'lock': {
-				break;
-			}
-			default: {
-				if (device.capabilitiesObj.onoff) {
-					let service = this.addService(new Service.Switch(this.name, this.UUID));
-					this.capabilities.on = new On({accessory:this, service:service, optional:false});
-				}
-				break;
-			}
-		}
+                let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
+                this.capabilities.lockCurentState = new LockCurrentState({ accessory: this, service: service, optional: false });
+                this.capabilities.lockTargetState = new LockTargetState({ accessory: this, service: service, optional: false });
+                break;
+            }
+            case "light": {
+                let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
+                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                this.capabilities.brightness = new Brightness({ accessory: this, service: service, optional: true });
+                this.capabilities.hue = new Hue({ accessory: this, service: service, optional: true });
+                this.capabilities.saturation = new Saturation({ accessory: this, service: service, optional: true });
+                this.capabilities.colorTemperature = new ColorTemperature({ accessory: this, service: service, optional: true });
+
+                break;
+            }
+            case "lock": {
+                break;
+            }
+            default: {
+                if (device.capabilitiesObj.onoff) {
+                    let service = this.addService(new Service.Switch(this.name, this.UUID));
+                    this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                }
+                break;
+            }
+        }
 
 		if (this.device.capabilitiesObj.alarm_motion) {
 			let service = this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
