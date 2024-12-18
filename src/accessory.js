@@ -70,9 +70,6 @@ module.exports = class extends Events {
 
                 break;
             }
-            case "lock": {
-                break;
-            }
             default: {
                 if (device.capabilitiesObj.onoff) {
                     let service = this.addService(new Service.Switch(this.name, this.UUID));
