@@ -1,6 +1,5 @@
-let { API, Service, Characteristic } = require('./../homebridge.js');
-let Capability = require('../capability.js');
-
+let { API, Service, Characteristic } = require("./../homebridge.js");
+let Capability = require("../capability.js");
 
 module.exports = class extends Capability {
     constructor(options) {
@@ -8,16 +7,16 @@ module.exports = class extends Capability {
     }
 
     toHomeKit(value) {
-		let UNSECURED = Characteristic.LockCurrentState.UNSECURED;
-		let SECURED = Characteristic.LockCurrentState.SECURED;
+        let UNSECURED = Characteristic.LockCurrentState.UNSECURED;
+        let SECURED = Characteristic.LockCurrentState.SECURED;
 
-		return value ? SECURED : UNSECURED;
+        return value ? SECURED : UNSECURED;
     }
 
     toHomey(value) {
-		let UNSECURED = Characteristic.LockCurrentState.UNSECURED;
+        let UNSECURED = Characteristic.LockCurrentState.UNSECURED;
         let SECURED = Characteristic.LockCurrentState.SECURED;
 
-		return value == SECURED;
+        return value == SECURED;
     }
 };
