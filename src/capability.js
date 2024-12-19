@@ -22,7 +22,8 @@ module.exports = class {
 
         if (capabilityValue == undefined) {
             this.getCapabilityValue = () => {
-                return this.getCapability().value;
+				let capability = this.getCapability();
+				return capability.value;
             };
         } else {
             this.getCapabilityValue = capabilityValue;
