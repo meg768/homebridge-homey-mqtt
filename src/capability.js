@@ -22,7 +22,7 @@ module.exports = class {
 
         if (capabilityValue == undefined) {
             this.getCapabilityValue = () => {
-                return getCapability().value;
+                return this.getCapability().value;
             };
         } else {
             this.getCapabilityValue = capabilityValue;
