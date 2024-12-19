@@ -80,8 +80,14 @@ module.exports = class extends Events {
 
         if (this.device.capabilitiesObj.car_doors_locked) {
             let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
-            this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", accessory: this, service: service, optional: false });
-            this.capabilities.lockTargetState = new LockTargetState({ capabilityID: "car_doors_locked", accessory: this, service: service, optional: false });
+
+			// Workaround
+			let capabilityValue = () => {
+				return !this.device.capabilitiesObj.car_doors_locked;
+			}
+
+            this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
+            this.capabilities.lockTargetState = new LockTargetState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
         }
 
         if (this.device.capabilitiesObj.alarm_motion) {

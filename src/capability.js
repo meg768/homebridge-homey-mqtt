@@ -1,79 +1,77 @@
 var { API, Service, Characteristic } = require('./homebridge.js');
 
 module.exports = class {
-	constructor(options) {
-		let { accessory, service, capabilityID, characteristic, optional = false } = options;
+    constructor(options) {
+        let { accessory, service, capabilityID, capabilityValue, optional = false } = options;
 
-		if (capabilityID == undefined) {
-			throw new Error(`Capability ID must be specified.`);
+        if (capabilityID == undefined) {
+            throw new Error(`Capability ID must be specified.`);
+        }
+
+        if (characteristic == undefined) {
+            throw new Error(`A HomeKit characteristic must be specified.`);
+        }
+
+        this.device = accessory.device;
+        this.log = accessory.log;
+        this.debug = accessory.debug;
+        this.accessory = accessory;
+        this.service = service;
+        this.capabilityID = capabilityID;
+        this.characteristic = characteristic;
+
+		        
+		if (capabilityValue == undefined) {
+            this.capabilityValue = () => {
+				return this.device.capabilitiesObj[this.capabilityID];
+			}
+        }
+		else {
+			this.capabilityValue = capabilityValue;
 		}
 
-		if (characteristic == undefined) {
-			throw new Error(`A HomeKit characteristic must be specified.`);
+		if (this.getCapabilityValue() != undefined) {
+            this.enableCapability();
 		}
+    }
 
-		this.device = accessory.device;
-		this.log = accessory.log;
-		this.debug = accessory.debug;
-		this.accessory = accessory;
-		this.service = service;
-		this.capabilityID = capabilityID;
-		this.capability = this.device.capabilitiesObj[this.capabilityID];
-		this.characteristic = characteristic;
-
-		if (!optional && this.capability == undefined) {
-			throw new Error(`Capability '${this.capabilityID}' not found.`);
-		}
-
-		if (this.capability) {
-			this.enableCapability();
-		}
-	}
+    getCharacteristic() {
+        return this.service.getCharacteristic(this.characteristic);
+    }
 
 	getCapabilityID() {
 		return this.capabilityID;
 	}
 
-	getCharacteristic() {
-		return this.service.getCharacteristic(this.characteristic);
-	}
+    toHomey(value) {
+        return value;
+    }
 
-	getCapability() {
-		return this.device.capabilitiesObj[this.getCapabilityID()]; 
-	}
+    toHomeKit(value) {
+        return value;
+    }
 
-	toHomey(value) {
-		return value;		
-	}
+    enableCapability() {
+        let currentValue = this.getCapabilityValue();
+        let characteristic = this.getCharacteristic();
+        let capabilityID = this.getCapabilityID();
 
-	toHomeKit(value) {
-		return value;		
-	}
+        characteristic.updateValue(this.toHomeKit(currentValue));
 
-	enableCapability() {
+        characteristic.onGet(async () => {
+            return this.toHomeKit(currentValue);
+        });
 
-		let currentValue = this.capability.value;
-		let characteristic = this.getCharacteristic();
-		let capabilityID = this.getCapabilityID();
+        characteristic.onSet(async (value) => {
+            currentValue = this.toHomey(value);
+            await this.accessory.publish(capabilityID, currentValue);
+        });
 
-		characteristic.updateValue(this.toHomeKit(currentValue));
-
-		characteristic.onGet(async () => {
-			return this.toHomeKit(currentValue);
-		});
-
-		characteristic.onSet(async (value) => {
-			currentValue = this.toHomey(value);
-			await this.accessory.publish(capabilityID, currentValue);
-		});
-
-		this.accessory.on(capabilityID, (value) => {
-			currentValue = value;
-			value = this.toHomeKit(value);
-			this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-			characteristic.updateValue(value);
-		});
-
-	}
-
+        this.accessory.on(capabilityID, (value) => {
+            currentValue = value;
+            value = this.toHomeKit(value);
+            this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
+            characteristic.updateValue(value);
+        });
+    }
 };
