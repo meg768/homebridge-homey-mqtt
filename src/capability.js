@@ -1,4 +1,4 @@
-var { API, Service, Characteristic } = require('./homebridge.js');
+var { API, Service, Characteristic } = require("./homebridge.js");
 
 module.exports = class {
     constructor(options) {
@@ -22,8 +22,8 @@ module.exports = class {
 
         if (capabilityValue == undefined) {
             this.getCapabilityValue = () => {
-				let capability = this.getCapability();
-				return capability.value;	
+                let capability = this.getCapability();
+                return capability.value;
             };
         } else {
             this.getCapabilityValue = capabilityValue;
@@ -39,10 +39,10 @@ module.exports = class {
     }
 
     getCapability() {
-		return this.device.capabilitiesObj[this.capabilityID];
+        return this.device.capabilitiesObj[this.capabilityID];
     }
-    
-	getCapabilityID() {
+
+    getCapabilityID() {
         return this.capabilityID;
     }
 

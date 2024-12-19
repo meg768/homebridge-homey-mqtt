@@ -86,8 +86,8 @@ module.exports = class extends Events {
 				return !this.device.capabilitiesObj.car_doors_locked;
 			}
 
-            this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
-            this.capabilities.lockTargetState = new LockTargetState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
+            this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", XcapabilityValue: capabilityValue, accessory: this, service: service, optional: false });
+            this.capabilities.lockTargetState = new LockTargetState({ capabilityID: "car_doors_locked", XcapabilityValue: capabilityValue, accessory: this, service: service, optional: false });
         }
 
         if (this.device.capabilitiesObj.alarm_motion) {
