@@ -1,6 +1,6 @@
 {
   "name": "homebridge-homey-mqtt",
-  "version": "5.0.83",
+  "version": "5.0.84",
   "description": "homebridge-homey-mqtt",
   "main": "index.js",
   "scripts": {
