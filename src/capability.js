@@ -23,7 +23,7 @@ module.exports = class {
         if (capabilityValue == undefined) {
             this.getCapabilityValue = () => {
 				let capability = this.getCapability();
-				return capability.value;
+				return capability.value;	
             };
         } else {
             this.getCapabilityValue = capabilityValue;
@@ -39,7 +39,7 @@ module.exports = class {
     }
 
     getCapability() {
-		this.device.capabilitiesObj[this.capabilityID];
+		return this.device.capabilitiesObj[this.capabilityID];
     }
     
 	getCapabilityID() {
