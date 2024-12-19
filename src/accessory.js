@@ -83,7 +83,7 @@ module.exports = class extends Events {
 
 			// Workaround
 			let capabilityValue = () => {
-				return this.device.capabilitiesObj.car_doors_locked.value;
+				return !this.device.capabilitiesObj.car_doors_locked.value;
 			}
 
             this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
