@@ -20,28 +20,30 @@ module.exports = class {
         this.capabilityID = capabilityID;
         this.characteristic = characteristic;
 
-		        
-		if (capabilityValue == undefined) {
+        if (capabilityValue == undefined) {
             this.getCapabilityValue = () => {
-                return this.device.capabilitiesObj[this.capabilityID];
+                return getCapability().value;
             };
+        } else {
+            this.getCapabilityValue = capabilityValue;
         }
-		else {
-			this.getCapabilityValue = capabilityValue;
-		}
 
-		if (this.getCapabilityValue() != undefined) {
+        if (this.getCapabilityValue() != undefined) {
             this.enableCapability();
-		}
+        }
     }
 
     getCharacteristic() {
         return this.service.getCharacteristic(this.characteristic);
     }
 
+    getCapability() {
+		this.device.capabilitiesObj[this.capabilityID];
+    }
+    
 	getCapabilityID() {
-		return this.capabilityID;
-	}
+        return this.capabilityID;
+    }
 
     toHomey(value) {
         return value;
