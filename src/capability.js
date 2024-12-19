@@ -22,12 +22,12 @@ module.exports = class {
 
 		        
 		if (capabilityValue == undefined) {
-            this.capabilityValue = () => {
-				return this.device.capabilitiesObj[this.capabilityID];
-			}
+            this.getCapabilityValue = () => {
+                return this.device.capabilitiesObj[this.capabilityID];
+            };
         }
 		else {
-			this.capabilityValue = capabilityValue;
+			this.getCapabilityValue = capabilityValue;
 		}
 
 		if (this.getCapabilityValue() != undefined) {
