@@ -52,7 +52,7 @@ module.exports = class extends Events {
                 this.capabilities.dim = new ColorBrightness({ capabilityID: 'dim', accessory: this, service: service});
                 this.capabilities.light_hue = new ColorHue({ capabilityID: 'light_hue', accessory: this, service: service});
                 this.capabilities.light_saturation = new ColorSaturation({ capabilityID: 'light_saturation', accessory: this, service: service});
-                this.capabilities.light_temperature = new ColorTemperature({ capabilityID: 'light_temperature', aturation, accessory: this, service: service});
+                this.capabilities.light_temperature = new ColorTemperature({ capabilityID: 'light_temperature', accessory: this, service: service});
 
                 break;
             }
