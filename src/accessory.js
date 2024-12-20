@@ -7,9 +7,7 @@ module.exports = class extends Events {
         let On = require("./capabilities/on.js");
         let Brightness = require("./capabilities/brightness.js");
         let ColorTemperature = require("./capabilities/color-temperature.js");
-        let MotionDetected = require("./capabilities/motion-detected.js");
         let CurrentAmbientLightLevel = require("./capabilities/current-ambient-light-level.js");
-        let CurrentRelativeHumidity = require("./capabilities/current-relative-humidity.js");
         let CurrentTemperature = require("./capabilities/current-temperature.js");
         let BatteryLevel = require("./capabilities/battery-level.js");
         let StatusLowBattery = require("./capabilities/status-low-battery.js");
@@ -85,8 +83,10 @@ module.exports = class extends Events {
         }
 
         if (this.device.capabilitiesObj.alarm_motion) {
-            let service = this.addService(new Service.MotionSensor(`${this.name} - rörelse`, this.UUID));
-            this.capabilities.motionDetected = new MotionDetected({ accessory: this, service: service, optional: false });
+            let Motion = require("./capabilities/motion.js");
+
+            let service = this.addService(new Service.MotionSensor(this.name, this.UUID));
+            this.capabilities.alarm_motion = new Motion({ capabilityID: 'alarm_motion',accessory: this, service: service, optional: false });
         }
         if (this.device.capabilitiesObj.measure_temperature) {
             let service = this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
@@ -97,8 +97,9 @@ module.exports = class extends Events {
             this.capabilities.currentAmbientLightLevel = new CurrentAmbientLightLevel({ accessory: this, service: service, optional: false });
         }
         if (this.device.capabilitiesObj.measure_humidity) {
-            let service = this.addService(new Service.HumiditySensor(`${this.name} - luftfuktighet`, this.UUID));
-            this.capabilities.currentRelativeHumidity = new CurrentRelativeHumidity({ accessory: this, service: service, optional: false });
+            let Humidity = require("./capabilities/humidity.js");
+            let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
+            this.capabilities.measure_humidity = new Humidity({ capabilityID: "measure_humidity", accessory: this, service: service, optional: false });
         }
         if (this.device.capabilitiesObj.measure_battery) {
             let service = this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
