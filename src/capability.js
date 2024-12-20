@@ -2,7 +2,7 @@ var { API, Service, Characteristic } = require("./homebridge.js");
 
 module.exports = class {
     constructor(options) {
-        let { accessory, service, capabilityID, characteristic, capabilityValue, optional = false } = options;
+        let { accessory, service, capabilityID, characteristic} = options;
 
         if (capabilityID == undefined) {
             throw new Error(`Capability ID must be specified.`);
@@ -26,8 +26,7 @@ module.exports = class {
     }
 
     getCapabilityValue = () => {
-        let capability = this.getCapability();
-        return capability.value;
+        return this.getCapability().value;
     };
 
     getCharacteristic() {
