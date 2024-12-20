@@ -82,11 +82,13 @@ module.exports = class extends Events {
             let service = this.addService(new Service.TemperatureSensor(this.name, this.UUID));
             this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service});
         }
+        /*
         if (this.device.capabilitiesObj.measure_luminance) {
             let Capability = require("./capabilities/color-brightness.js");
             let service = this.addService(new Service.LightSensor(this.name, this.UUID));
             this.capabilities.measure_luminance = new Capability({ capabilityID:'measure_luminance', accessory: this, service: service});
         }
+            */
         if (this.device.capabilitiesObj.measure_humidity) {
             let Capability = require("./capabilities/sensor-humidity.js");
             let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
