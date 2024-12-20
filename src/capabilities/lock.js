@@ -1,35 +1,9 @@
 var { API, Service, Characteristic } = require("../homebridge.js");
+let Capability = require("../capability.js");
 
-module.exports = class {
+module.exports = class extends Capability{
     constructor(options) {
-        let { accessory, service, capabilityID } = options;
-
-        if (capabilityID == undefined) {
-            throw new Error(`Capability ID must be specified.`);
-        }
-
-        this.device = accessory.device;
-        this.log = accessory.log;
-        this.debug = accessory.debug;
-        this.accessory = accessory;
-        this.service = service;
-        this.capabilityID = capabilityID;
-
-        if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
-            this.enableCapability();
-        }
-    }
-
-    getCapabilityValue = () => {
-        return this.getCapability().value;
-    };
-
-    getCapability() {
-        return this.device.capabilitiesObj[this.capabilityID];
-    }
-
-    getCapabilityID() {
-        return this.capabilityID;
+        super(options);
     }
 
     toHomey(value) {
