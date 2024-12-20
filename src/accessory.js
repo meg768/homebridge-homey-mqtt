@@ -78,16 +78,10 @@ module.exports = class extends Events {
             }
         }
 
-        if (false && this.device.capabilitiesObj.car_doors_locked) {
+        if (this.device.capabilitiesObj.car_doors_locked) {
+            let Lock = require("./capabilities/lock.js");
             let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
-
-			// Workaround
-			let capabilityValue = () => {
-				return !this.device.capabilitiesObj.car_doors_locked.value;
-			}
-
-            this.capabilities.lockCurentState = new LockCurrentState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
-            this.capabilities.lockTargetState = new LockTargetState({ capabilityID: "car_doors_locked", capabilityValue: capabilityValue, accessory: this, service: service, optional: false });
+            this.capabilities.car_doors_locked = new Lock({ capabilityID: "car_doors_locked", accessory: this, service: service });
         }
 
         if (this.device.capabilitiesObj.alarm_motion) {
