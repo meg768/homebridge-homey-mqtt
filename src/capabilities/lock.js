@@ -1,7 +1,7 @@
 var { API, Service, Characteristic } = require("../homebridge.js");
 let Capability = require("../capability.js");
 
-module.exports = class extends Capability{
+module.exports = class extends Capability {
     constructor(options) {
         super(options);
     }
@@ -33,6 +33,11 @@ module.exports = class extends Capability{
         });
 
         lockTargetState.onSet(async (value) => {
+            currentValue = this.toHomey(value);
+            await this.accessory.publish(capabilityID, currentValue);
+        });
+
+        lockCurrentState.onSet(async (value) => {
             currentValue = this.toHomey(value);
             await this.accessory.publish(capabilityID, currentValue);
         });
