@@ -45,6 +45,7 @@ module.exports = class extends Events {
                 let ColorBrightness = require("./capabilities/color-brightness.js");
                 let ColorHue  = require("./capabilities/color-hue.js");
                 let ColorSaturation  = require("./capabilities/color-saturation.js");
+                let ColorTemperature = require("./capabilities/color-temperature.js");
 
                 let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
                 this.capabilities.onoff = new OnOff({ capabilityID: 'onoff', accessory: this, service: service});
