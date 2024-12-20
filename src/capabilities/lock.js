@@ -31,11 +31,11 @@ module.exports = class {
     }
 
     toHomey(value) {
-        return value;
+        return !value;
     }
 
     toHomeKit(value) {
-        return value;
+        return !value;
     }
 
     enable() {
