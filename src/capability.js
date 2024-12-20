@@ -46,7 +46,7 @@ module.exports = class {
 
     enableCapability() {
         let currentValue = this.getCapabilityValue();
-        let characteristic = this.service.getCharacteristic(this.getCharacteristic());
+        let characteristic = this.getCharacteristic();
         let capabilityID = this.getCapabilityID();
 
         characteristic.updateValue(this.toHomeKit(currentValue));
