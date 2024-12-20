@@ -6,8 +6,9 @@ module.exports = class extends Capability {
         super({ capabilityID: "locked", ...options });
     }
 
+
     getCharacteristic() {
-        return Characteristic.LockTargetState;
+        return this.service.getCharacteristic(Characteristic.LockCurrentState);
     }
 
     toHomeKit(value) {

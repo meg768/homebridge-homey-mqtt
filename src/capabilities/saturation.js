@@ -7,8 +7,9 @@ module.exports = class extends Capability {
     }
 
     getCharacteristic() {
-        return Characteristic.Saturation;
+        return this.service.getCharacteristic(Characteristic.Saturation);
     }
+
     toHomeKit(value) {
         let characteristic = this.getCharacteristic();
         let capability = this.getCapability();

@@ -4,10 +4,11 @@ let Capability = require('../capability.js');
 
 module.exports = class extends Capability {
     constructor(options) {
-        super({ capabilityID: "alarm_motion",  ...options });
+        super({ capabilityID: "alarm_motion", ...options });
     }
 
+
     getCharacteristic() {
-        return Characteristic.MotionDetected;
+        return this.service.getCharacteristic(Characteristic.MotionDetected);
     }
 };

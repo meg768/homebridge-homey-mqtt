@@ -8,7 +8,7 @@ module.exports = class extends Capability {
     }
 
     getCharacteristic() {
-        return Characteristic.ColorTemperature;
+        return this.service.getCharacteristic(Characteristic.ColorTemperature);
     }
 
     toHomeKit(value) {

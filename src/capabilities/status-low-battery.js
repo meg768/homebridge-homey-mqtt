@@ -8,7 +8,7 @@ module.exports = class extends Capability {
     }
 
     getCharacteristic() {
-        return Characteristic.BatteryLevel;
+        return this.service.getCharacteristic(Characteristic.BatteryLevel);
     }
 
     toHomeKit(value) {

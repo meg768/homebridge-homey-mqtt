@@ -6,8 +6,9 @@ module.exports = class extends Capability {
         super({ capabilityID: "light_hue", ...options });
     }
 
+
     getCharacteristic() {
-        return Characteristic.Hue;
+        return this.service.getCharacteristic(Characteristic.Hue);
     }
 
     toHomeKit(value) {

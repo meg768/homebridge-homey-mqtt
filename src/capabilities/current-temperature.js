@@ -5,7 +5,9 @@ module.exports = class extends Capability {
     constructor(options) {
         super({ capabilityID: "measure_temperature", ...options });
     }
+
+	
     getCharacteristic() {
-        return Characteristic.CurrentTemperature;
+        return this.service.getCharacteristic(Characteristic.CurrentTemperature);
     }
 };

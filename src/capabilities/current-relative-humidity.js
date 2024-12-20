@@ -6,7 +6,8 @@ module.exports = class extends Capability {
         super({ capabilityID: "measure_humidity", ...options });
     }
 
+
     getCharacteristic() {
-        return Characteristic.CurrentRelativeHumidity;
+        return this.service.getCharacteristic(Characteristic.CurrentRelativeHumidity);
     }
 };

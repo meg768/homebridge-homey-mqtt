@@ -7,6 +7,6 @@ module.exports = class extends Capability {
     }
 
     getCharacteristic() {
-        return Characteristic.CurrentAmbientLightLevel;
+        return this.service.getCharacteristic(Characteristic.CurrentAmbientLightLevel);
     }
 };

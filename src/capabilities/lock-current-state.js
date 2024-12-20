@@ -7,7 +7,7 @@ module.exports = class extends Capability {
     }
 
     getCharacteristic() {
-        return Characteristic.LockCurrentState;
+        return this.service.getCharacteristic(Characteristic.LockCurrentState);
     }
 
     toHomeKit(value) {
