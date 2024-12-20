@@ -40,16 +40,16 @@ module.exports = class {
 
     enable() {
 
-        let lockCurrenState = this.service.getCharacteristic(Characteristic.LockCurrentState);
+        let lockCurrentState = this.service.getCharacteristic(Characteristic.LockCurrentState);
         let lockTargetState = this.service.getCharacteristic(Characteristic.LockTargetState);
 
         let currentValue = this.getCapabilityValue();
         let capabilityID = this.getCapabilityID();
 
         lockTargetState.updateValue(this.toHomeKit(currentValue));
-        lockCurrenState.updateValue(this.toHomeKit(currentValue));
+        lockCurrentState.updateValue(this.toHomeKit(currentValue));
 
-        lockCurrenState.onGet(async () => {
+        lockCurrentState.onGet(async () => {
             return this.toHomeKit(currentValue);
         });
 
@@ -67,7 +67,7 @@ module.exports = class {
             value = this.toHomeKit(value);
             this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
             lockTargetState.updateValue(value);
-            lockCurrenState.updateValue(value);
+            lockCurrentState.updateValue(value);
         });
     }
 };
