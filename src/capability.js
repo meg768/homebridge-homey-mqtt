@@ -20,9 +20,9 @@ module.exports = class {
         this.capabilityID = capabilityID;
         this.characteristic = characteristic;
 
-        if (this.getCapabilityValue() != undefined) {
+        if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
             this.enableCapability();
-        }
+        };
     }
 
     getCapabilityValue = () => {
