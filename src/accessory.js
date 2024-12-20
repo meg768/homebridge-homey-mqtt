@@ -29,13 +29,13 @@ module.exports = class extends Events {
 
         switch (this.device.class) {
             case "tv": {
-                let OnOff = require('./capalities/onoff.js');
+                let OnOff = require("./capabilities/onoff.js");
                 let service = this.addService(new Service.Television(this.name, this.UUID));
                 this.capabilities.onoff = new OnOff({ capabilityID:'onoff', accessory: this, service: service });
                 break;
             }
             case "socket": {
-                let OnOff = require('./capalities/onoff.js');
+                let OnOff = require("./capabilities/onoff.js");
                 let service = this.addService(new Service.Outlet(this.name, this.UUID));
                 this.capabilities.onoff = new OnOff({ capabilityID:'onoff', accessory: this, service: service });
                 break;
