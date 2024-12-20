@@ -1,7 +1,7 @@
 var { API, Service, Characteristic } = require("./homebridge.js");
 var Events = require("events");
 
-m§odule.exports = class extends Events {
+module.exports = class extends Events {
     constructor(options) {
         super(options);
 
@@ -81,17 +81,17 @@ m§odule.exports = class extends Events {
         if (this.device.capabilitiesObj.measure_temperature) {
             let Capability = require("./capabilities/temperature-sensor.js");
             let service = this.addService(new Service.TemperatureSensor(this.name, this.UUID));
-            this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service, optional: false });
+            this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service});
         }
         if (this.device.capabilitiesObj.measure_luminance) {
             let Capability = require("./capabilities/color-lightness.js");
             let service = this.addService(new Service.LightSensor(`${this.name} - ljusstyrka`, this.UUID));
-            this.capabilities.measure_luminance = new Capability({ capabilityID:'measure_luminance', accessory: this, service: service, optional: false });
+            this.capabilities.measure_luminance = new Capability({ capabilityID:'measure_luminance', accessory: this, service: service});
         }
         if (this.device.capabilitiesObj.measure_humidity) {
             let Capability = require("./capabilities/humidity.js");
             let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
-            this.capabilities.measure_humidity = new Capability({ capabilityID: "measure_humidity", accessory: this, service: service, optional: false });
+            this.capabilities.measure_humidity = new Capability({ capabilityID: "measure_humidity", accessory: this, service: service});
         }
         /*
         if (this.device.capabilitiesObj.measure_battery) {
