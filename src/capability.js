@@ -20,19 +20,15 @@ module.exports = class {
         this.capabilityID = capabilityID;
         this.characteristic = characteristic;
 
-        if (capabilityValue == undefined) {
-            this.getCapabilityValue = () => {
-                let capability = this.getCapability();
-                return capability.value;
-            };
-        } else {
-            this.getCapabilityValue = capabilityValue;
-        }
-
         if (this.getCapabilityValue() != undefined) {
             this.enableCapability();
         }
     }
+
+    getCapabilityValue = () => {
+        let capability = this.getCapability();
+        return capability.value;
+    };
 
     getCharacteristic() {
         return this.service.getCharacteristic(this.characteristic);
