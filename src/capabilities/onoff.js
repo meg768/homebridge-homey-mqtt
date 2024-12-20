@@ -1,13 +1,11 @@
 let { API, Service, Characteristic } = require('./../homebridge.js');
 let Capability = require('../capability.js');
 
-module.exports = class extends Capability {
-    constructor(options) {
-        super({ capabilityID: "measure_temperature", ...options });
-    }
 
-	
+module.exports = class extends Capability {
+
+
     getCharacteristic() {
-        return this.service.getCharacteristic(Characteristic.CurrentTemperature);
+        return this.service.getCharacteristic(Characteristic.On);
     }
 };

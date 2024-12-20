@@ -1,22 +1,9 @@
 var { API, Service, Characteristic } = require("./homebridge.js");
 var Events = require("events");
-var Timer = require("yow/timer");
 
-module.exports = class extends Events {
+m§odule.exports = class extends Events {
     constructor(options) {
-        let On = require("./capabilities/on.js");
-        let Brightness = require("./capabilities/brightness.js");
-        let ColorTemperature = require("./capabilities/color-temperature.js");
-        let CurrentAmbientLightLevel = require("./capabilities/current-ambient-light-level.js");
-        let CurrentTemperature = require("./capabilities/current-temperature.js");
-        let BatteryLevel = require("./capabilities/battery-level.js");
-        let StatusLowBattery = require("./capabilities/status-low-battery.js");
-        let Hue = require("./capabilities/hue.js");
-        let Saturation = require("./capabilities/saturation.js");
-        let LockCurrentState = require("./capabilities/lock-current-state.js");
-        let LockTargetState = require("./capabilities/lock-target-state.js");
-
-        super();
+        super(options);
 
         let { device, platform } = options;
 
@@ -42,35 +29,38 @@ module.exports = class extends Events {
 
         switch (this.device.class) {
             case "tv": {
+                let OnOff = require('./capalities/onoff.js');
                 let service = this.addService(new Service.Television(this.name, this.UUID));
-                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                this.capabilities.onoff = new OnOff({ capabilityID:'onoff', accessory: this, service: service });
                 break;
             }
             case "socket": {
+                let OnOff = require('./capalities/onoff.js');
                 let service = this.addService(new Service.Outlet(this.name, this.UUID));
-                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
-                break;
-            }
-            case "lock": {
-                let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
-                this.capabilities.lockCurentState = new LockCurrentState({ accessory: this, service: service, optional: false });
-                this.capabilities.lockTargetState = new LockTargetState({ accessory: this, service: service, optional: false });
+                this.capabilities.onoff = new OnOff({ capabilityID:'onoff', accessory: this, service: service });
                 break;
             }
             case "light": {
+                let OnOff = require("./capabilities/onoff.js");
+                let ColorBrightness = require("./capabilities/color-brightness.js");
+                let ColorHue  = require("./capabilities/color-hue.js");
+                let ColorSaturation  = require("./capabilities/color-saturation.js");
+
                 let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
-                this.capabilities.on = new On({ accessory: this, service: service, optional: false });
-                this.capabilities.brightness = new Brightness({ accessory: this, service: service, optional: true });
-                this.capabilities.hue = new Hue({ accessory: this, service: service, optional: true });
-                this.capabilities.saturation = new Saturation({ accessory: this, service: service, optional: true });
-                this.capabilities.colorTemperature = new ColorTemperature({ accessory: this, service: service, optional: true });
+                this.capabilities.onoff = new OnOff({ capabilityID: 'onoff', accessory: this, service: service});
+                this.capabilities.dim = new ColorBrightness({ capabilityID: 'dim', accessory: this, service: service});
+                this.capabilities.light_hue = new ColorHue({ capabilityID: 'light_hue', accessory: this, service: service});
+                this.capabilities.light_saturation = new ColorSaturation({ capabilityID: 'light_saturation', accessory: this, service: service});
+                this.capabilities.light_temperature = new ColorTemperature({ capabilityID: 'light_temperature', aturation, accessory: this, service: service});
 
                 break;
             }
             default: {
                 if (device.capabilitiesObj.onoff) {
+                    let OnOff = require("./capabilities/onoff.js");
+
                     let service = this.addService(new Service.Switch(this.name, this.UUID));
-                    this.capabilities.on = new On({ accessory: this, service: service, optional: false });
+                    this.capabilities.onoff = new OnOff({ capabilityID: 'onoff', accessory: this, service: service});
                 }
                 break;
             }
@@ -86,26 +76,30 @@ module.exports = class extends Events {
             let Motion = require("./capabilities/motion.js");
 
             let service = this.addService(new Service.MotionSensor(this.name, this.UUID));
-            this.capabilities.alarm_motion = new Motion({ capabilityID: 'alarm_motion',accessory: this, service: service, optional: false });
+            this.capabilities.alarm_motion = new Motion({ capabilityID: 'alarm_motion',accessory: this, service: service});
         }
         if (this.device.capabilitiesObj.measure_temperature) {
-            let service = this.addService(new Service.TemperatureSensor(`${this.name} - temperatur`, this.UUID));
-            this.capabilities.currentTemperature = new CurrentTemperature({ accessory: this, service: service, optional: false });
+            let Capability = require("./capabilities/temperature-sensor.js");
+            let service = this.addService(new Service.TemperatureSensor(this.name, this.UUID));
+            this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service, optional: false });
         }
         if (this.device.capabilitiesObj.measure_luminance) {
+            let Capability = require("./capabilities/color-lightness.js");
             let service = this.addService(new Service.LightSensor(`${this.name} - ljusstyrka`, this.UUID));
-            this.capabilities.currentAmbientLightLevel = new CurrentAmbientLightLevel({ accessory: this, service: service, optional: false });
+            this.capabilities.measure_luminance = new Capability({ capabilityID:'measure_luminance', accessory: this, service: service, optional: false });
         }
         if (this.device.capabilitiesObj.measure_humidity) {
-            let Humidity = require("./capabilities/humidity.js");
+            let Capability = require("./capabilities/humidity.js");
             let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
-            this.capabilities.measure_humidity = new Humidity({ capabilityID: "measure_humidity", accessory: this, service: service, optional: false });
+            this.capabilities.measure_humidity = new Capability({ capabilityID: "measure_humidity", accessory: this, service: service, optional: false });
         }
+        /*
         if (this.device.capabilitiesObj.measure_battery) {
             let service = this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
             this.capabilities.statusLowBattery = new StatusLowBattery({ accessory: this, service: service, optional: false });
             this.capabilities.batteryLevel = new BatteryLevel({ accessory: this, service: service, optional: true });
         }
+            */
 
         if (this.services.length == 0) {
             throw new Error(`No service available for device '${this.name}'`);
