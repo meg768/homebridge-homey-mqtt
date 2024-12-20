@@ -78,7 +78,7 @@ module.exports = class extends Events {
             }
         }
 
-        if (this.device.capabilitiesObj.car_doors_locked) {
+        if (false && this.device.capabilitiesObj.car_doors_locked) {
             let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
 
 			// Workaround
