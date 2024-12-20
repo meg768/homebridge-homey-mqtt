@@ -47,6 +47,11 @@ module.exports = class {
         let capabilityID = this.getCapabilityID();
 
         lockTargetState.updateValue(this.toHomeKit(currentValue));
+        lockCurrenState.updateValue(this.toHomeKit(currentValue));
+
+        lockCurrenState.onGet(async () => {
+            return this.toHomeKit(currentValue);
+        });
 
         lockTargetState.onGet(async () => {
             return this.toHomeKit(currentValue);
