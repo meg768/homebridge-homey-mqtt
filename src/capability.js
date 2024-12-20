@@ -18,7 +18,6 @@ module.exports = class {
         this.accessory = accessory;
         this.service = service;
         this.capabilityID = capabilityID;
-        this.characteristic = characteristic;
 
         if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
             this.enableCapability();
@@ -30,7 +29,7 @@ module.exports = class {
     };
 
     getCharacteristic() {
-        return this.service.getCharacteristic(this.characteristic);
+        this.log(`Need to implement getCharacteristic()`); 
     }
 
     getCapability() {
@@ -51,7 +50,7 @@ module.exports = class {
 
     enableCapability() {
         let currentValue = this.getCapabilityValue();
-        let characteristic = this.getCharacteristic();
+        let characteristic = this.service.getCharacteristic(this.getCharacteristic());
         let capabilityID = this.getCapabilityID();
 
         characteristic.updateValue(this.toHomeKit(currentValue));

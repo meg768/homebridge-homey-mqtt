@@ -15,7 +15,9 @@ module.exports = class {
         this.service = service;
         this.capabilityID = capabilityID;
 
-        this.enable();
+        if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
+            this.enableCapability();
+        }
     }
 
     getCapabilityValue = () => {
@@ -38,8 +40,7 @@ module.exports = class {
         return !value;
     }
 
-    enable() {
-
+    enableCapability() {
         let lockCurrentState = this.service.getCharacteristic(Characteristic.LockCurrentState);
         let lockTargetState = this.service.getCharacteristic(Characteristic.LockTargetState);
 

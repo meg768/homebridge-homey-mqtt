@@ -3,8 +3,11 @@ let Capability = require('../capability.js');
 
 
 module.exports = class extends Capability {
-	constructor(options) {
-		super({capabilityID:'onoff', characteristic:Characteristic.On, ...options});
-	}
+    constructor(options) {
+        super({ capabilityID: "onoff",  ...options });
+    }
 
+    getCharacteristic() {
+        return Characteristic.On;
+    }
 };

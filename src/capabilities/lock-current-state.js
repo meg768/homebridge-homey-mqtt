@@ -3,7 +3,11 @@ let Capability = require("../capability.js");
 
 module.exports = class extends Capability {
     constructor(options) {
-        super({ capabilityID: "locked", characteristic: Characteristic.LockCurrentState, ...options });
+        super({ capabilityID: "locked", ...options });
+    }
+
+    getCharacteristic() {
+        return Characteristic.LockCurrentState;
     }
 
     toHomeKit(value) {
