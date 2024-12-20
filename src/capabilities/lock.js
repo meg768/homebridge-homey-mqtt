@@ -1,4 +1,4 @@
-var { API, Service, Characteristic } = require("./homebridge.js");
+var { API, Service, Characteristic } = require("../homebridge.js");
 
 module.exports = class {
     constructor(options) {
