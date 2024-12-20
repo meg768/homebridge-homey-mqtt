@@ -22,7 +22,7 @@ module.exports = class extends Capability{
         let capabilityID = this.getCapabilityID();
 
         lockTargetState.updateValue(this.toHomeKit(currentValue));
-        lockCurrentState.updateValue(this.toHomeKit(currentValue));
+        lockCurrentState.updateValue(this.toHomeKit(cxurrentValue));
 
         lockCurrentState.onGet(async () => {
             return this.toHomeKit(currentValue);
