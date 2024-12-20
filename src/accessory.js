@@ -73,13 +73,12 @@ module.exports = class extends Events {
         }
 
         if (this.device.capabilitiesObj.alarm_motion) {
-            let Motion = require("./capabilities/motion.js");
-
+            let Motion = require("./capabilities/sensor-motion.js");
             let service = this.addService(new Service.MotionSensor(this.name, this.UUID));
             this.capabilities.alarm_motion = new Motion({ capabilityID: 'alarm_motion',accessory: this, service: service});
         }
         if (this.device.capabilitiesObj.measure_temperature) {
-            let Capability = require("./capabilities/temperature-sensor.js");
+            let Capability = require("./capabilities/sensor-temperature.js");
             let service = this.addService(new Service.TemperatureSensor(this.name, this.UUID));
             this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service});
         }
@@ -89,7 +88,7 @@ module.exports = class extends Events {
             this.capabilities.measure_luminance = new Capability({ capabilityID:'measure_luminance', accessory: this, service: service});
         }
         if (this.device.capabilitiesObj.measure_humidity) {
-            let Capability = require("./capabilities/humidity.js");
+            let Capability = require("./capabilities/sensor-humidity.js");
             let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
             this.capabilities.measure_humidity = new Capability({ capabilityID: "measure_humidity", accessory: this, service: service});
         }
