@@ -67,8 +67,14 @@ module.exports = class extends Events {
             }
         }
 
-        if (this.device.capabilitiesObj.car_doors_locked) {
+        if (this.device.capabilitiesObj.locked) {
             let Lock = require("./capabilities/lock.js");
+            let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
+            this.capabilities.car_doors_locked = new Lock({ capabilityID: "locked", accessory: this, service: service });
+        }
+
+        if (this.device.capabilitiesObj.car_doors_locked) {
+            let Lock = require("./capabilities/lock-inverted.js");
             let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
             this.capabilities.car_doors_locked = new Lock({ capabilityID: "car_doors_locked", accessory: this, service: service });
         }

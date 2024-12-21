@@ -6,13 +6,6 @@ module.exports = class extends Capability {
         super(options);
     }
 
-    toHomey(value) {
-        return !value;
-    }
-
-    toHomeKit(value) {
-        return !value;
-    }
 
     enableCapability() {
         let lockCurrentState = this.service.getCharacteristic(Characteristic.LockCurrentState);
