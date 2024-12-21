@@ -81,7 +81,7 @@ module.exports = class extends Events {
         if (this.device.capabilitiesObj.measure_temperature) {
             let Capability = require("./capabilities/sensor-temperature.js");
             let service = this.addService(new Service.TemperatureSensor(this.name, this.UUID));
-            this.capabilities.currentTemperature = new Capability({ capabilityID:'measure_temperature', accessory: this, service: service});
+            this.capabilities.measure_temperature = new Capability({ capabilityID: "measure_temperature", accessory: this, service: service });
         }
         
         if (this.device.capabilitiesObj.measure_luminance) {
@@ -95,14 +95,13 @@ module.exports = class extends Events {
             let service = this.addService(new Service.HumiditySensor(this.name, this.UUID));
             this.capabilities.measure_humidity = new Capability({ capabilityID: "measure_humidity", accessory: this, service: service});
         }
-        /*
+        
         if (this.device.capabilitiesObj.measure_battery) {
-            let service = this.addService(new Service.Battery(`${this.name} - batteri`, this.UUID));
-            this.capabilities.statusLowBattery = new StatusLowBattery({ accessory: this, service: service, optional: false });
-            this.capabilities.batteryLevel = new BatteryLevel({ accessory: this, service: service, optional: true });
+            let Capability = require("./capabilities/battery.js");
+            let service = this.addService(new Service.Battery(this.name, this.UUID));
+            this.capabilities.measure_battery = new Capability({ capabilityID: "measure_battery", accessory: this, service: service });
         }
-            */
-
+         
         if (this.services.length == 0) {
             throw new Error(`No service available for device '${this.name}'`);
         }
