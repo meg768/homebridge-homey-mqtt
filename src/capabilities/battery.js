@@ -39,7 +39,7 @@ module.exports = class extends Capability {
         this.accessory.on(capabilityID, (value) => {
             currentValue = value;
             this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-            lockTargetState.updateValue(value);
+            batteryLevel.updateValue(value);
             statusLowBattery.updateValue(isLowBattery(value));
         });
     }
