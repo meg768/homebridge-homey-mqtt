@@ -27,7 +27,7 @@ module.exports = class extends Capability {
 
                 await delay(500);
 
-                currentValue = value;
+                currentValue = false;
                 await this.accessory.publish(capabilityID, currentValue);
 
             }
