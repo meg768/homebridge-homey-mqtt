@@ -7,7 +7,6 @@ module.exports = class extends Capability {
         return value === true;
     }
 
-
     getCharacteristic() {
         return this.service.getCharacteristic(Characteristic.On);
     }
