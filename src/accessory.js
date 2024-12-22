@@ -67,6 +67,12 @@ module.exports = class extends Events {
             }
         }
 
+        if (this.device.capabilitiesObj.button) {
+            let Button = require("./capabilities/button.js");
+            let service = this.addService(new Service.this.Service.StatelessProgrammableSwitch(this.name, this.UUID));
+            this.capabilities.button = new Button({ capabilityID: "button", accessory: this, service: service });
+        }
+
         if (this.device.capabilitiesObj.locked) {
             let Lock = require("./capabilities/lock.js");
             let service = this.addService(new Service.LockMechanism(this.name, this.UUID));
