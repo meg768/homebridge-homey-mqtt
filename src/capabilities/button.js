@@ -5,28 +5,52 @@ module.exports = class extends Capability {
 
 
     enableCapability() {
-		let programmableSwitchEvent = this.service.getCharacteristic(Characteristic.ProgrammableSwitchEvent);
+		let on = this.service.getCharacteristic(Characteristic.On);
 
-        let currentValue = this.getCapabilityValue();
+        let currentValue = false;
         let capabilityID = this.getCapabilityID();
 
+        let delay = async (delay = 500) => {
+            return new Promise((resolve) => setTimeout(() => resolve(), delay));
+        }
 
-        programmableSwitchEvent.onGet(async () => {
-            return Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
+        on.updateValue(currentValue);
+
+        on.onGet(async () => {
+            return currentValue;
         });
 
-
-        this.accessory.on(capabilityID, (value) => {
-
-            currentValue = value;
-
+        on.onSet(async (value) => {
             if (value) {
-                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-                programmableSwitchEvent.updateValue(Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
+                currentValue = true;
+                await this.accessory.publish(capabilityID, currentValue);
+
+                await delay(500);
+
+                currentValue = value;
+                await this.accessory.publish(capabilityID, currentValue);
 
             }
         });
 
+/*         
+        this.accessory.on(capabilityID, async (value) => {
+
+            if (value) {
+                currentValue = value;
+                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${currentValue}`);
+                on.updateValue(currentValue);
+
+                await delay(500);
+                
+                currentValue = value;
+                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${currentValue}`);
+                on.updateValue(currentValue);
+
+
+            }
+        });
+*/
 
     }
 };

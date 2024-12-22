@@ -69,7 +69,7 @@ module.exports = class extends Events {
 
         if (this.device.capabilitiesObj.button) {
             let Button = require("./capabilities/button.js");
-            let service = this.addService(new Service.StatelessProgrammableSwitch(this.name, this.UUID));
+            let service = this.addService(new Service.Switch(this.name, this.UUID));
             this.capabilities.button = new Button({ capabilityID: "button", accessory: this, service: service });
         }
 
