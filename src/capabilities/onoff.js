@@ -3,6 +3,9 @@ let Capability = require('../capability.js');
 
 
 module.exports = class extends Capability {
+    toHomeKit(value) {
+        return value === true;
+    }
 
 
     getCharacteristic() {
