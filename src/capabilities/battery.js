@@ -6,13 +6,6 @@ module.exports = class extends Capability {
         super(options);
     }
 
-    toHomey(value) {
-        return !value;
-    }
-
-    toHomeKit(value) {
-        return !value;
-    }
 
     enableCapability() {
 
@@ -34,6 +27,10 @@ module.exports = class extends Capability {
 
         batteryLevel.onGet(async () => {
             return currentValue;
+        });
+
+        statusLowBattery.onGet(async () => {
+            return isLowBattery(currentValue);
         });
 
         this.accessory.on(capabilityID, (value) => {
