@@ -46,13 +46,15 @@ module.exports = class extends Events {
                 let ColorHue = require("./capabilities/color-hue.js");
                 let ColorSaturation = require("./capabilities/color-saturation.js");
                 let ColorTemperature = require("./capabilities/color-temperature.js");
+                let ColorLuminance = require("./capabilities/color-luminance.js");
 
                 let service = this.addService(new Service.Lightbulb(this.name, this.UUID));
                 this.capabilities.onoff = new OnOff({ capabilityID: "onoff", accessory: this, service: service });
-                this.capabilities.dim = new ColorBrightness({ capabilityID: "dim", accessory: this, service: service });
+                //this.capabilities.dim = new ColorBrightness({ capabilityID: "dim", accessory: this, service: service });
                 this.capabilities.light_hue = new ColorHue({ capabilityID: "light_hue", accessory: this, service: service });
                 this.capabilities.light_saturation = new ColorSaturation({ capabilityID: "light_saturation", accessory: this, service: service });
                 this.capabilities.light_temperature = new ColorTemperature({ capabilityID: "light_temperature", accessory: this, service: service });
+                this.capabilities.dim = new ColorLuminance({ capabilityID: "dim", accessory: this, service: service });
 
                 break;
             }
