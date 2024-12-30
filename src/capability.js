@@ -60,6 +60,12 @@ module.exports = class {
             await this.accessory.publish(capabilityID, currentValue);
         });
 
+        this.enableCapabilityListener();
+
+    }
+
+
+    enableCapabilityListener() {
         this.accessory.on(capabilityID, (value) => {
             if (!this.accessory.isPublishing()) {
                 currentValue = value;
@@ -68,5 +74,6 @@ module.exports = class {
                 characteristic.updateValue(value);
             }
         });
+        
     }
 };
