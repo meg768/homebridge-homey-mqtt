@@ -60,7 +60,7 @@ module.exports = class {
         characteristic.onSet(async (value) => {
             let homeyValue = this.toHomey(value);
 
-            if (value != this.toHomeKit(currentValue)) {
+            if (true || value != this.toHomeKit(currentValue)) {
                 this.timer.setTimer(500, async () => {
                     characteristic.updateValue(value);
                     await this.accessory.publish(capabilityID, currentValue = homeyValue);
@@ -72,7 +72,7 @@ module.exports = class {
 
         this.accessory.on(capabilityID, (value) => {
             if (!this.accessory.isPublishing()) {
-                if (value != currentValue) {
+                if (true || value != currentValue) {
                     currentValue = value;
                     value = this.toHomeKit(value);
                     this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
