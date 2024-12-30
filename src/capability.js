@@ -71,10 +71,13 @@ module.exports = class {
 
         this.accessory.on(capabilityID, (value) => {
             if (!this.accessory.isPublishing()) {
-                currentValue = value;
-                value = this.toHomeKit(value);
-                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-                characteristic.updateValue(value);
+                if (value != currentValue) {
+                    currentValue = value;
+                    value = this.toHomeKit(value);
+                    this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
+                    characteristic.updateValue(value);
+
+                }
             }
         });
 
