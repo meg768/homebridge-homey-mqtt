@@ -26,6 +26,7 @@ module.exports = class extends Events {
         this.debug = platform.debug;
         this.services = [];
         this.capabilities = {};
+        this.publishing = false;
 
         switch (this.device.class) {
             case "tv": {
@@ -154,8 +155,20 @@ module.exports = class extends Events {
         return this.services;
     }
 
+    isPublishing() {
+        return this.publishing;
+    }
+    
     async publish(capabilityID, value) {
-        this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
-        await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
+        if (!this.publishing) {
+            this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
+
+            this.publishing = true;
+            await this.platform.mqtt.publish(`${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}`, JSON.stringify(value));
+            this.publishing = false;
+        }
+        else {
+            this.debug(`Skipping publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
+        }
     }
 };
