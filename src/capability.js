@@ -58,11 +58,14 @@ module.exports = class {
         });
 
         characteristic.onSet(async (value) => {
-            this.timer.setTimer(500, async () => {
-                currentValue = this.toHomey(value);
-                await this.accessory.publish(capabilityID, currentValue);
+            value = this.toHomey(value);
 
-            });
+            if (value != currentValue) {
+                this.timer.setTimer(500, async () => {
+                    await this.accessory.publish(capabilityID, currentValue = value);
+                });
+
+            }
         });
 
 
