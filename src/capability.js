@@ -60,11 +60,11 @@ module.exports = class {
             await this.accessory.publish(capabilityID, currentValue);
         });
 
-        this.accessory.on(capabilityID, (value) => {
+        this.accessory.on(capabilityID, async (value) => {
             currentValue = value;
             value = this.toHomeKit(value);
             this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-            characteristic.updateValue(value);
+            await characteristic.updateValue(value);
         });
     }
 };
