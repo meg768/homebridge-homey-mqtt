@@ -64,8 +64,8 @@ module.exports = class {
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
 
-                this.timer.setTimer(100, () => {
-                    this.accessory.publish(capabilityID, currentValue);
+                await this.timer.setTimer(100, async () => {
+                    await this.accessory.publish(capabilityID, currentValue);
                 });
             }
 
