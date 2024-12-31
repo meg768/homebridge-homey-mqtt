@@ -63,8 +63,8 @@ module.exports = class {
 
             if (newValue != currentValue) {
                 currentValue = newValue;
-                this.timer.setTimer(500, async () => {
-                    await this.accessory.publish(capabilityID, currentValue);
+                this.timer.setTimer(500, () => {
+                    this.accessory.publish(capabilityID, currentValue);
                 });
             }
 
