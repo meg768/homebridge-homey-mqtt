@@ -63,8 +63,8 @@ module.exports = class {
 
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
-                
-                this.timer.setTimer(500, () => {
+
+                this.timer.setTimer(100, () => {
                     this.accessory.publish(capabilityID, currentValue);
                 });
             }
