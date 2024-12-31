@@ -58,27 +58,23 @@ module.exports = class {
         });
 
         characteristic.onSet(async (value) => {
-            let homeyValue = this.toHomey(value);
 
-            if (true || value != this.toHomeKit(currentValue)) {
-                this.timer.setTimer(500, async () => {
-                    characteristic.updateValue(value);
-                    await this.accessory.publish(capabilityID, currentValue = homeyValue);
-                });
+            if (value != this.toHomeKit(currentValue)) {
+                let homeyValue = this.toHomey(value);
+                await this.accessory.publish(capabilityID, currentValue = homeyValue);
+            };
 
-            }
         });
 
 
         this.accessory.on(capabilityID, (value) => {
-            if (!this.accessory.isPublishing()) {
-                if (true || value != currentValue) {
-                    currentValue = value;
-                    value = this.toHomeKit(value);
-                    this.debug(`Updating ${this.accessory.name}/${capabilityID}:${value}`);
-                    characteristic.updateValue(value);
+            if (value != currentValue) {
+                let homeKitValue = this.toHomeKit(value);
 
-                }
+                currentValue = value;
+                characteristic.updateValue(homeKitValue);
+
+                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
             }
         });
 
