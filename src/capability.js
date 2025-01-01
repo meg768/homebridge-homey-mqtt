@@ -63,8 +63,8 @@ module.exports = class {
 
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
-                //characteristic.updateValue(this.toHomeKit(currentValue));
-                this.accessory.publish(capabilityID, currentValue);
+                await this.accessory.publish(capabilityID, currentValue);
+                characteristic.updateValue(this.toHomeKit(currentValue));
 
                 /*
                 await this.timer.setTimer(250, async () => {
