@@ -50,7 +50,7 @@ module.exports = class {
         let currentValue = this.getCapabilityValue();
         let characteristic = this.getCharacteristic();
         let capabilityID = this.getCapabilityID();
-
+        
         characteristic.updateValue(this.toHomeKit(currentValue));
 
         characteristic.onGet(async () => {
@@ -64,7 +64,6 @@ module.exports = class {
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
                 await this.accessory.publish(capabilityID, currentValue);
-                characteristic.updateValue(this.toHomeKit(currentValue));
 
                 /*
                 await this.timer.setTimer(250, async () => {
@@ -77,7 +76,7 @@ module.exports = class {
 
 
         this.accessory.on(capabilityID, (value) => {
-            if (value != currentValue) {
+            if (value != currentValue && !this.accessory.isPublishing()) {
                 let homeKitValue = this.toHomeKit(value);
 
                 currentValue = value;
