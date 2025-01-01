@@ -72,7 +72,9 @@ module.exports = class {
                 await this.accessory.publish(capabilityID, currentValue);
             
                 await this.timer.setTimer(250, async () => {
-                    await this.accessory.publish(capabilityID, currentValue);
+                    if (homeyValue != currentValue) {
+                        await this.accessory.publish(capabilityID, currentValue);
+                    }
                 });
             }
 
