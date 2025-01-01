@@ -81,13 +81,17 @@ module.exports = class {
 
 
         this.accessory.on(capabilityID, (value) => {
-            if (value != currentValue) {
+            if (value != currentValue && !this.accessory.isPublishing()) {
                 let homeKitValue = this.toHomeKit(value);
 
                 currentValue = value;
                 characteristic.updateValue(homeKitValue);
 
                 this.debug(`Updating ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
+            }
+            else {
+                this.debug(`Event during publishing ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
+
             }
         });
 
