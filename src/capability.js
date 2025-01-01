@@ -1,11 +1,9 @@
 var { API, Service, Characteristic } = require("./homebridge.js");
-var Timer = require('yow/timer');
-
-
+var Timer = require("yow/timer");
 
 module.exports = class {
     constructor(options) {
-        let { accessory, service, capabilityID} = options;
+        let { accessory, service, capabilityID } = options;
 
         if (capabilityID == undefined) {
             throw new Error(`Capability ID must be specified.`);
@@ -19,10 +17,9 @@ module.exports = class {
         this.capabilityID = capabilityID;
         this.timer = new Timer();
 
-
         if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
             this.enableCapability();
-        };
+        }
     }
 
     getCapabilityValue = () => {
@@ -30,7 +27,7 @@ module.exports = class {
     };
 
     getCharacteristic() {
-        this.log(`Need to implement getCharacteristic()`); 
+        this.log(`Need to implement getCharacteristic()`);
     }
 
     getCapability() {
@@ -60,42 +57,36 @@ module.exports = class {
             return this.toHomeKit(currentValue);
         });
 
-
         characteristic.onSet(async (value) => {
-
             let homeyValue = this.toHomey(value);
 
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
 
-                //await this.accessory.publish(capabilityID, currentValue);
-            
+                await this.accessory.publish(capabilityID, currentValue);
+                /*
                 await this.timer.setTimer(250, async () => {
                     if (homeyValue != currentValue) {
                         await this.accessory.publish(capabilityID, currentValue);
                     }
                 });
+                */
             }
-
         });
-
 
         this.accessory.on(capabilityID, (value) => {
-            if (value != currentValue && !this.accessory.isPublishing()) {
-                let homeKitValue = this.toHomeKit(value);
+            if (value != currentValue) {
+                if (!this.accessory.isPublishing()) {
+                    let homeKitValue = this.toHomeKit(value);
 
-                currentValue = value;
-                characteristic.updateValue(homeKitValue);
+                    currentValue = value;
+                    characteristic.updateValue(homeKitValue);
 
-                this.debug(`Updating ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
-            }
-            else {
-                this.debug(`Event during publishing ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
-
+                    this.debug(`Updating ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
+                } else {
+                    this.debug(`Event during publishing ${this.accessory.name}/${capabilityID}:${homeKitValue}`);
+                }
             }
         });
-
     }
-
-
 };
