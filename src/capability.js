@@ -55,7 +55,6 @@ module.exports = class {
         let capabilityID = this.getCapabilityID();
 
         characteristic.updateValue(this.toHomeKit(currentValue));
-        tracker.setValue(currentValue);
 
         characteristic.onGet(async () => {
             return this.toHomeKit(currentValue);
