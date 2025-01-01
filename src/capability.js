@@ -76,7 +76,7 @@ module.exports = class {
 
 
         this.accessory.on(capabilityID, (value) => {
-            if (value != currentValue && !this.accessory.isPublishing()) {
+            if (value != currentValue) {
                 let homeKitValue = this.toHomeKit(value);
 
                 currentValue = value;
