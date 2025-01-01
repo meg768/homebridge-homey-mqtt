@@ -1,8 +1,6 @@
 var { API, Service, Characteristic } = require("./homebridge.js");
 var Timer = require('yow/timer');
 
-
-
 module.exports = class {
     constructor(options) {
         let { accessory, service, capabilityID} = options;
@@ -18,7 +16,6 @@ module.exports = class {
         this.service = service;
         this.capabilityID = capabilityID;
         this.timer = new Timer();
-
 
         if (this.device.capabilitiesObj[this.capabilityID] != undefined) {
             this.enableCapability();
@@ -53,14 +50,12 @@ module.exports = class {
         let currentValue = this.getCapabilityValue();
         let characteristic = this.getCharacteristic();
         let capabilityID = this.getCapabilityID();
-
+        
         characteristic.updateValue(this.toHomeKit(currentValue));
-        tracker.setValue(currentValue);
 
         characteristic.onGet(async () => {
             return this.toHomeKit(currentValue);
         });
-
 
         characteristic.onSet(async (value) => {
 
@@ -68,12 +63,13 @@ module.exports = class {
 
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
-
                 await this.accessory.publish(capabilityID, currentValue);
-            
+
+                /*
                 await this.timer.setTimer(250, async () => {
                     await this.accessory.publish(capabilityID, currentValue);
                 });
+                */
             }
 
         });
