@@ -63,6 +63,7 @@ module.exports = class {
 
             if (homeyValue != currentValue) {
                 currentValue = homeyValue;
+                characteristic.updateValue(this.toHomeKit(currentValue));
                 await this.accessory.publish(capabilityID, currentValue);
 
                 /*
