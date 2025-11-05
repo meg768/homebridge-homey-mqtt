@@ -160,7 +160,7 @@ module.exports = class extends Events {
     }
     
     async publish(capabilityID, value) {
-        if (!this.publishing) {
+        if (!this.publishing || true) {
             this.debug(`Publishing ${this.platform.config.mqtt.topic}/devices/${this.device.id}/${capabilityID}:${value}`);
 
             this.publishing = true;
