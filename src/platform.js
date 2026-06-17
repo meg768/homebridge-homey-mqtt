@@ -65,38 +65,71 @@ module.exports = class Platform {
 
 
     accessories(callback) {
-		
-        let accessories = undefined;
+        let accessories = [];
+        let accessoriesLoaded = false;
+        let didCallback = false;
+        let pendingMessages = [];
 
-		this.mqtt.on('connect', () => {
-     
+        this.mqtt.on('connect', () => {
             this.debug(`Subscribing to ${this.config.mqtt.topic}/devices...`);
 
             this.mqtt.subscribe(`${this.config.mqtt.topic}/devices`);
             this.mqtt.subscribe(`${this.config.mqtt.topic}/devices/+/+`);
-    
+
             this.mqtt.on('message', (topic, message) => {
-                let value = JSON.parse(message.toString());
-    
+                let value;
+
+                try {
+                    value = JSON.parse(message.toString());
+                }
+                catch(error) {
+                    this.debug(`Ignoring invalid JSON on ${topic}. ${error.message}`);
+                    return;
+                }
+
                 if (topic == `${this.config.mqtt.topic}/devices`) {
                     accessories = this.createAccessories(value);
-                    callback(accessories);	
-    
+                    accessoriesLoaded = true;
+
+                    if (!didCallback) {
+                        callback(accessories);
+                        didCallback = true;
+                    }
+
+                    for (let pendingMessage of pendingMessages) {
+                        this.applyCapabilityMessage(accessories, pendingMessage.topic, pendingMessage.value);
+                    }
+
+                    pendingMessages = [];
                 }
                 else {
-                    let parts = topic.split('/');
-                    let capabilityID = parts.pop();
-                    let deviceID = parts.pop();
+                    if (!accessoriesLoaded) {
+                        pendingMessages.push({ topic, value });
+                        return;
+                    }
 
-                    let accessory = accessories.find(item => {
-                        return item.device.id == deviceID;
-                    });
-
-                    if (accessory != undefined)
-                        accessory.emit(capabilityID, value);
+                    this.applyCapabilityMessage(accessories, topic, value);
                 }
             });
         });
+    }
+
+    applyCapabilityMessage(accessories, topic, value) {
+        let parts = topic.split('/');
+        let capabilityID = parts.pop();
+        let deviceID = parts.pop();
+
+        if (!deviceID || !capabilityID) {
+            this.debug(`Ignoring unexpected MQTT topic ${topic}.`);
+            return;
+        }
+
+        let accessory = accessories.find(item => {
+            return item.device.id == deviceID;
+        });
+
+        if (accessory != undefined)
+            accessory.emit(capabilityID, value);
     }
 
 	generateUUID(id) {
