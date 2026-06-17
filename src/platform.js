@@ -49,6 +49,11 @@ module.exports = class Platform {
                 continue;
             }
 
+            if (!this.canCreateAccessory(device)) {
+                this.debug(`Ignoring device ${device.name}. No supported HomeKit service.`);
+                continue;
+            }
+
             try {
 				this.debug(`Adding device '${device.name}'.`);
                 accessories.push(new Accessory({device:device, platform:this}));
@@ -62,6 +67,27 @@ module.exports = class Platform {
 		return accessories;
 
 	}
+
+    canCreateAccessory(device) {
+        if (["tv", "socket", "light"].indexOf(device.class) >= 0) {
+            return true;
+        }
+
+        let supportedCapabilities = [
+            "onoff",
+            "locked",
+            "car_doors_locked",
+            "alarm_motion",
+            "measure_temperature",
+            "measure_luminance",
+            "measure_humidity",
+            "measure_battery"
+        ];
+
+        return supportedCapabilities.some(capabilityID => {
+            return device.capabilitiesObj[capabilityID] != undefined;
+        });
+    }
 
 
     accessories(callback) {
