@@ -69,48 +69,62 @@ module.exports = class Platform {
         let accessoriesLoaded = false;
         let didCallback = false;
         let pendingMessages = [];
+        let startupTimeout = setTimeout(() => {
+            if (didCallback) {
+                return;
+            }
+
+            this.debug(`No ${this.config.mqtt.topic}/devices retained message received. Starting with no accessories.`);
+            callback(accessories);
+            didCallback = true;
+        }, 10000);
+
+        let finishLoading = nextAccessories => {
+            accessories = nextAccessories;
+            accessoriesLoaded = true;
+
+            if (!didCallback) {
+                clearTimeout(startupTimeout);
+                callback(accessories);
+                didCallback = true;
+            }
+
+            for (let pendingMessage of pendingMessages) {
+                this.applyCapabilityMessage(accessories, pendingMessage.topic, pendingMessage.value);
+            }
+
+            pendingMessages = [];
+        };
+
+        this.mqtt.on('message', (topic, message) => {
+            let value;
+
+            try {
+                value = JSON.parse(message.toString());
+            }
+            catch(error) {
+                this.debug(`Ignoring invalid JSON on ${topic}. ${error.message}`);
+                return;
+            }
+
+            if (topic == `${this.config.mqtt.topic}/devices`) {
+                finishLoading(this.createAccessories(value));
+            }
+            else {
+                if (!accessoriesLoaded) {
+                    pendingMessages.push({ topic, value });
+                    return;
+                }
+
+                this.applyCapabilityMessage(accessories, topic, value);
+            }
+        });
 
         this.mqtt.on('connect', () => {
             this.debug(`Subscribing to ${this.config.mqtt.topic}/devices...`);
 
             this.mqtt.subscribe(`${this.config.mqtt.topic}/devices`);
             this.mqtt.subscribe(`${this.config.mqtt.topic}/devices/+/+`);
-
-            this.mqtt.on('message', (topic, message) => {
-                let value;
-
-                try {
-                    value = JSON.parse(message.toString());
-                }
-                catch(error) {
-                    this.debug(`Ignoring invalid JSON on ${topic}. ${error.message}`);
-                    return;
-                }
-
-                if (topic == `${this.config.mqtt.topic}/devices`) {
-                    accessories = this.createAccessories(value);
-                    accessoriesLoaded = true;
-
-                    if (!didCallback) {
-                        callback(accessories);
-                        didCallback = true;
-                    }
-
-                    for (let pendingMessage of pendingMessages) {
-                        this.applyCapabilityMessage(accessories, pendingMessage.topic, pendingMessage.value);
-                    }
-
-                    pendingMessages = [];
-                }
-                else {
-                    if (!accessoriesLoaded) {
-                        pendingMessages.push({ topic, value });
-                        return;
-                    }
-
-                    this.applyCapabilityMessage(accessories, topic, value);
-                }
-            });
         });
     }
 
